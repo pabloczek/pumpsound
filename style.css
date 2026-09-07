@@ -319,24 +319,7 @@ nav a:hover {
 
 .music-item:first-child {
     grid-column: 1 / -1;
-
     height: 390px;
-}
-
-.music-item:first-child::before {
-    content: "01 / 05";
-
-    position: absolute;
-
-    top: 19px;
-    left: 21px;
-
-    z-index: 5;
-
-    font-size: 9px;
-    letter-spacing: 3px;
-
-    color: rgba(255,255,255,0.8);
 }
 
 
@@ -344,22 +327,6 @@ nav a:hover {
 
 .music-item:not(:first-child) {
     height: 285px;
-}
-
-.music-item:not(:first-child)::before {
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-    left: 0;
-    right: 0;
-
-    height: 1px;
-
-    background: rgba(255,255,255,0.18);
-
-    z-index: 5;
 }
 
 
@@ -403,49 +370,72 @@ nav a:hover {
 }
 
 
-/* IMAGE GRADIENT */
+/* IMAGE OVERLAY */
 
 .music-thumbnail::after {
     content: "";
 
     position: absolute;
-
     inset: 0;
 
     pointer-events: none;
 
-    background:
-        linear-gradient(
-            180deg,
-            rgba(0,0,0,0.05) 25%,
-            rgba(0,0,0,0.1) 45%,
-            rgba(0,0,0,0.88) 100%
-        );
+    background: rgba(0,0,0,0.08);
 
-    transition: opacity 0.4s ease;
+    transition: background 0.4s ease;
 }
 
 .music-item:hover .music-thumbnail::after {
-    opacity: 0.9;
+    background: rgba(0,0,0,0.16);
 }
 
+/* SOLID INFO PANEL */
 
-/* NUMBER FOR SMALL CARDS */
-
-.music-item:not(:first-child) .music-number {
+.music-info {
     position: absolute;
 
-    top: 17px;
-    left: 18px;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
-    z-index: 6;
+    z-index: 7;
+
+    padding: 18px 22px 19px;
+
+    background: rgba(5,5,5,0.94);
+    border-top: 1px solid rgba(255,255,255,0.13);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.music-item:first-child .music-info {
+    padding: 21px 30px 22px;
+}
+
+/* NUMBER */
+
+.music-number {
+    position: absolute;
+
+    top: 19px;
+    left: 21px;
+
+    z-index: 8;
 
     font-size: 9px;
     letter-spacing: 3px;
 
-    color: rgba(255,255,255,0.8);
-}
+    color: rgba(255,255,255,0.82);
 
+    padding: 6px 8px;
+
+    background: rgba(5,5,5,0.48);
+    border: 1px solid rgba(255,255,255,0.16);
+
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
 
 /* PLAY */
 
@@ -502,80 +492,69 @@ nav a:hover {
 }
 
 
-/* MUSIC INFO */
-
-.music-info {
-    position: absolute;
-
-    left: 22px;
-    right: 22px;
-    bottom: 20px;
-
-    z-index: 7;
-}
-
-.music-item:first-child .music-info {
-    left: 30px;
-    right: 30px;
-    bottom: 24px;
-}
+/* MUSIC TEXT */
 
 .music-title {
-    max-width: calc(100% - 35px);
+    max-width: calc(100% - 45px);
 
     font-size: 15px;
     line-height: 1.15;
 
     letter-spacing: -0.025em;
-
     font-weight: 600;
-
     color: #fff;
 }
 
 .music-item:first-child .music-title {
     max-width: 760px;
-
     font-size: clamp(25px, 3vw, 44px);
-
     line-height: 0.95;
 }
 
 .music-meta {
     display: flex;
-
     align-items: center;
-
     gap: 22px;
-
     margin-top: 12px;
-
     font-size: 8px;
-
     letter-spacing: 2px;
-
     color: rgba(255,255,255,0.55);
-
     text-transform: uppercase;
 }
+
+/* META ICONS */
 
 .music-meta span {
     display: inline-flex;
     align-items: center;
+    gap: 7px;
 }
 
+.music-meta svg {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    opacity: 0.62;
+}
 
 /* ARROW */
 
 .music-arrow {
     position: absolute;
 
-    right: 0;
-    bottom: 0;
+    right: 22px;
+    bottom: 21px;
 
-    z-index: 8;
+    z-index: 9;
 
-    font-size: 21px;
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
 
     color: rgba(255,255,255,0.75);
 
@@ -584,12 +563,15 @@ nav a:hover {
         color 0.3s ease;
 }
 
-.music-item:hover .music-arrow {
-    transform: translate(5px,-5px);
-
-    color: white;
+.music-item:first-child .music-arrow {
+    right: 28px;
+    bottom: 25px;
 }
 
+.music-item:hover .music-arrow {
+    transform: translate(4px,-4px);
+    color: white;
+}
 
 /* MUSIC FOOTER */
 
@@ -1483,11 +1465,11 @@ footer {
     }
 
     .music-item:first-child .music-title {
-        font-size: 11vw;
+        font-size: 8vw;
     }
 
     .music-title {
-        font-size: 8vw;
+        font-size: 5vw;
     }
 
     .music-meta {
@@ -1503,6 +1485,25 @@ footer {
         height: 58px;
 
         font-size: 15px;
+    }
+
+    .music-info,
+    .music-item:first-child .music-info {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 16px 18px 17px;
+    }
+
+    .music-number {
+        top: 14px;
+        left: 14px;
+    }
+
+    .music-arrow,
+    .music-item:first-child .music-arrow {
+        right: 15px;
+        bottom: 18px;
     }
 
     .music-footer {

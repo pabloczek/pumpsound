@@ -46,10 +46,6 @@ async function loadYouTubeData() {
 }
 
 
-/* ============================= */
-/* MUSIC */
-/* ============================= */
-
 function renderMusic(videos) {
     const musicList = document.querySelector("#music-list");
 
@@ -72,6 +68,8 @@ function renderMusic(videos) {
         const date = formatDate(video.publishedAt);
         const views = formatViews(video.views);
 
+        const number = String(index + 1).padStart(2, "0");
+
         return `
             <a
                 href="${video.url}"
@@ -79,11 +77,6 @@ function renderMusic(videos) {
                 rel="noopener noreferrer"
                 class="music-item"
             >
-
-                <div class="music-number">
-                    ${String(index + 1).padStart(2, "0")}
-                </div>
-
 
                 <div class="music-thumbnail">
 
@@ -102,18 +95,85 @@ function renderMusic(videos) {
 
                 <div class="music-info">
 
+                    <div class="music-number">
+                        ${number} / 05
+                    </div>
+
                     <div class="music-title">
                         ${escapeHTML(video.title)}
                     </div>
 
                     <div class="music-meta">
 
-                        <span>
+                        <span class="music-date">
+                            <svg
+                                width="11"
+                                height="11"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true"
+                            >
+                                <rect
+                                    x="3"
+                                    y="4"
+                                    width="18"
+                                    height="17"
+                                    rx="2"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                />
+
+                                <path
+                                    d="M16 2V6"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                />
+
+                                <path
+                                    d="M8 2V6"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                />
+
+                                <path
+                                    d="M3 10H21"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                />
+                            </svg>
+
                             ${date}
                         </span>
 
-                        <span>
-                            ${views} VIEWS
+
+                        <span class="music-views">
+                            <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M2.5 12C2.5 12 6 5.5 12 5.5C18 5.5 21.5 12 21.5 12C21.5 12 18 18.5 12 18.5C6 18.5 2.5 12 2.5 12Z"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                />
+
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="2.8"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                />
+                            </svg>
+
+                            ${views}
                         </span>
 
                     </div>
@@ -131,10 +191,6 @@ function renderMusic(videos) {
 }
 
 
-/* ============================= */
-/* DATE */
-/* ============================= */
-
 function formatDate(dateString) {
     if (!dateString) {
         return "";
@@ -149,10 +205,6 @@ function formatDate(dateString) {
     return `${day}.${month}.${year}`;
 }
 
-
-/* ============================= */
-/* VIEWS */
-/* ============================= */
 
 function formatViews(views) {
     if (views >= 1000000000) {
@@ -177,10 +229,6 @@ function formatViews(views) {
 }
 
 
-/* ============================= */
-/* SUBSCRIBERS */
-/* ============================= */
-
 function formatSubscribers(subscribers) {
     if (subscribers >= 1000000) {
         return (
@@ -198,10 +246,6 @@ function formatSubscribers(subscribers) {
 }
 
 
-/* ============================= */
-/* SECURITY */
-/* ============================= */
-
 function escapeHTML(text) {
     const div = document.createElement("div");
 
@@ -210,9 +254,5 @@ function escapeHTML(text) {
     return div.innerHTML;
 }
 
-
-/* ============================= */
-/* START */
-/* ============================= */
 
 loadYouTubeData();
