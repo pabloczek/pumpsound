@@ -8,9 +8,9 @@ export default async function handler(req, res) {
             });
         }
 
-        // 1. Pobieramy kanał PUMPSOUND
+        // 1. Pobieramy kanał PUMPSOUND wraz ze statystykami
         const channelParams = new URLSearchParams({
-            part: "id",
+            part: "id,statistics",
             forHandle: "@pumpsound",
             key: apiKey
         });
@@ -34,13 +34,13 @@ export default async function handler(req, res) {
             });
         }
 
-        const channelId = channelData.items[0].id;
+        const channel = channelData.items[0];
+        const channelId = channel.id;
 
+        const views = Number(channel.statistics?.viewCount || 0);
+        const subscribers = Number(channel.statistics?.subscriberCount || 0);
 
         // 2. Pobieramy 50 najnowszych PUBLICZNYCH filmów
-        //
-        // search.list nie zwraca filmów usuniętych/prywatnych,
-        // więc nie powinny trafiać do naszej sekcji MUSIC.
         const searchParams = new URLSearchParams({
             part: "snippet",
             channelId: channelId,
@@ -64,11 +64,17 @@ export default async function handler(req, res) {
         }
 
         if (!searchData.items || searchData.items.length === 0) {
+            res.setHeader(
+                "Cache-Control",
+                "s-maxage=1800, stale-while-revalidate=3600"
+            );
+
             return res.status(200).json({
+                views,
+                subscribers,
                 videos: []
             });
         }
-
 
         // 3. Pobieramy ID znalezionych filmów
         const videoIds = searchData.items
@@ -77,13 +83,13 @@ export default async function handler(req, res) {
 
         if (videoIds.length === 0) {
             return res.status(200).json({
+                views,
+                subscribers,
                 videos: []
             });
         }
 
-
         // 4. Pobieramy szczegóły filmów
-        //    potrzebne do długości i liczby wyświetleń
         const videoParams = new URLSearchParams({
             part: "snippet,contentDetails,statistics",
             id: videoIds.join(","),
@@ -103,10 +109,7 @@ export default async function handler(req, res) {
             });
         }
 
-
         // 5. Pomijamy Shortsy
-        //
-        // Bierzemy tylko filmy dłuższe niż 60 sekund.
         const musicVideos = videoData.items
             .filter(video => {
                 if (!video.contentDetails?.duration) {
@@ -126,7 +129,6 @@ export default async function handler(req, res) {
                 );
             })
             .slice(0, 5);
-
 
         // 6. Przygotowujemy dane dla frontendu
         const videos = musicVideos.map(video => ({
@@ -149,15 +151,15 @@ export default async function handler(req, res) {
             url: `https://www.youtube.com/watch?v=${video.id}`
         }));
 
-
         // Cache na 30 minut
         res.setHeader(
             "Cache-Control",
             "s-maxage=1800, stale-while-revalidate=3600"
         );
 
-
         return res.status(200).json({
+            views,
+            subscribers,
             videos
         });
 

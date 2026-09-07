@@ -63,12 +63,15 @@ function renderMusic(videos) {
         return;
     }
 
+    const total = videos.length;
+
     musicList.innerHTML = videos.map((video, index) => {
 
         const date = formatDate(video.publishedAt);
         const views = formatViews(video.views);
 
         const number = String(index + 1).padStart(2, "0");
+        const counter = `${number} / ${String(total).padStart(2, "0")}`;
 
         return `
             <a
@@ -77,6 +80,10 @@ function renderMusic(videos) {
                 rel="noopener noreferrer"
                 class="music-item"
             >
+
+                <div class="music-number">
+                    ${counter}
+                </div>
 
                 <div class="music-thumbnail">
 
@@ -94,10 +101,6 @@ function renderMusic(videos) {
 
 
                 <div class="music-info">
-
-                    <div class="music-number">
-                        ${number} / 05
-                    </div>
 
                     <div class="music-title">
                         ${escapeHTML(video.title)}
@@ -178,11 +181,6 @@ function renderMusic(videos) {
 
                     </div>
 
-                </div>
-
-
-                <div class="music-arrow">
-                    ↗
                 </div>
 
             </a>
