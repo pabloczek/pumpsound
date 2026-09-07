@@ -168,6 +168,20 @@ function applyLanguage(language, animate = false) {
     });
 
 
+    document
+        .querySelectorAll(
+            ".collaboration-stat-label"
+        )
+        .forEach((label) => {
+
+            label.textContent =
+                language === "pl"
+                    ? "MIESIĘCZNYCH SŁUCHACZY SPOTIFY"
+                    : "MONTHLY SPOTIFY LISTENERS";
+
+        });
+
+
     const languageSwitcher =
         document.querySelector(
             ".language-switcher"
@@ -241,6 +255,274 @@ function setupLanguageSwitcher() {
 
     applyLanguage(
         currentLanguage
+    );
+
+}
+
+
+function setupCollaborationStats() {
+
+    const collaborations =
+        document.querySelectorAll(
+            ".collaboration"
+        );
+
+    const artistKeys = [
+        "majki",
+        "cypis",
+        "sequento",
+        "bekaKsh",
+        "cheatz",
+        "diho"
+    ];
+
+    collaborations.forEach((collaboration, index) => {
+
+        const key =
+            artistKeys[index];
+
+        if (!key) {
+            return;
+        }
+
+        collaboration.dataset.artistKey =
+            key;
+
+    });
+
+}
+
+
+async function loadSpotifyData() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/spotify"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Could not load Spotify data"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !data.artists ||
+            typeof data.artists !== "object"
+        ) {
+            return;
+        }
+
+
+        document
+            .querySelectorAll(
+                ".collaboration[data-artist-key]"
+            )
+            .forEach((collaboration) => {
+
+                const artistKey =
+                    collaboration.dataset.artistKey;
+
+                const artist =
+                    data.artists[
+                        artistKey
+                    ];
+
+                if (
+                    !artist ||
+                    artist.monthlyListeners === null ||
+                    artist.monthlyListeners === undefined
+                ) {
+                    return;
+                }
+
+
+                const overlay =
+                    collaboration.querySelector(
+                        ".collaboration-overlay span"
+                    );
+
+
+                if (!overlay) {
+                    return;
+                }
+
+
+                overlay.innerHTML = `
+                    <span class="collaboration-stat-value">
+                        ${formatListeners(
+                            artist.monthlyListeners
+                        )}
+                    </span>
+                    <span class="collaboration-stat-label">
+                        ${currentLanguage === "pl"
+                            ? "MIESIĘCZNYCH SŁUCHACZY SPOTIFY"
+                            : "MONTHLY SPOTIFY LISTENERS"
+                        }
+                    </span>
+                `;
+
+                overlay.classList.add(
+                    "collaboration-stats"
+                );
+
+            });
+
+
+    } catch (error) {
+
+        console.error(
+            "Spotify data error:",
+            error
+        );
+
+    }
+
+}
+
+
+function formatListeners(listeners) {
+
+    const numericListeners =
+        Number(listeners) || 0;
+
+
+    if (
+        numericListeners >=
+        1000000000
+    ) {
+
+        return (
+            numericListeners /
+            1000000000
+        )
+            .toFixed(1)
+            .replace(
+                ".0",
+                ""
+            ) + "B";
+
+    }
+
+
+    if (
+        numericListeners >=
+        1000000
+    ) {
+
+        return (
+            numericListeners /
+            1000000
+        )
+            .toFixed(1)
+            .replace(
+                ".0",
+                ""
+            ) + "M";
+
+    }
+
+
+    if (
+        numericListeners >=
+        1000
+    ) {
+
+        return (
+            numericListeners /
+            1000
+        )
+            .toFixed(1)
+            .replace(
+                ".0",
+                ""
+            ) + "K";
+
+    }
+
+
+    return numericListeners.toLocaleString(
+        "en-US"
+    );
+
+}
+
+
+function setupCollaborationStatsStyles() {
+
+    if (
+        document.querySelector(
+            "#pumpsound-collaboration-stats-styles"
+        )
+    ) {
+        return;
+    }
+
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+
+    style.id =
+        "pumpsound-collaboration-stats-styles";
+
+
+    style.textContent = `
+        .collaboration-overlay span.collaboration-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .collaboration-overlay
+        .collaboration-stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .collaboration-overlay
+        .collaboration-stat-label {
+            font-size: 6px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            opacity: 0.65;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .collaboration-overlay
+            .collaboration-stat-value {
+                font-size: 20px;
+            }
+
+            .collaboration-overlay
+            .collaboration-stat-label {
+                font-size: 5px;
+                letter-spacing: 1.2px;
+            }
+        }
+    `;
+
+
+    document.head.appendChild(
+        style
     );
 
 }
@@ -844,4 +1126,7 @@ function escapeHTML(text) {
 
 
 setupLanguageSwitcher();
+setupCollaborationStats();
+setupCollaborationStatsStyles();
 loadYouTubeData();
+loadSpotifyData();
