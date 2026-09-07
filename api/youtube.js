@@ -39,7 +39,6 @@ export default async function handler(req, res) {
 
 
         // 2. Pobieramy ostatnie 15 filmów
-        //    i później odrzucamy Shortsy
         const playlistParams = new URLSearchParams({
             part: "snippet,contentDetails",
             playlistId: uploadsPlaylistId,
@@ -60,10 +59,16 @@ export default async function handler(req, res) {
             });
         }
 
+        if (!playlistData.items) {
+            return res.status(500).json({
+                error: "YouTube playlist returned no items"
+            });
+        }
 
-        // 3. Bierzemy ID filmów
+
+        // 3. Pobieramy ID filmów
         const videoIds = playlistData.items
-            .map(item => item.contentDetails.videoId)
+            .map(item => item.contentDetails?.videoId)
             .filter(Boolean);
 
         if (videoIds.length === 0) {
@@ -73,8 +78,7 @@ export default async function handler(req, res) {
         }
 
 
-        // 4. Pobieramy informacje o filmach:
-        //    długość + wyświetlenia
+        // 4. Pobieramy szczegóły filmów
         const videoParams = new URLSearchParams({
             part: "snippet,contentDetails,statistics",
             id: videoIds.join(","),
@@ -94,13 +98,20 @@ export default async function handler(req, res) {
             });
         }
 
+        if (!videoData.items) {
+            return res.status(500).json({
+                error: "YouTube videos returned no items"
+            });
+        }
+
 
         // 5. Pomijamy Shortsy
-        //
-        // Shorts zazwyczaj mają maksymalnie 60 sekund.
-        // Dzięki temu nie pokazujemy ich w MUSIC.
         const musicVideos = videoData.items
             .filter(video => {
+                if (!video.contentDetails?.duration) {
+                    return false;
+                }
+
                 const duration = parseDuration(
                     video.contentDetails.duration
                 );
@@ -114,14 +125,15 @@ export default async function handler(req, res) {
         const videos = musicVideos.map(video => ({
             id: video.id,
 
-            title: video.snippet.title,
+            title: video.snippet?.title || "",
 
-            publishedAt: video.snippet.publishedAt,
+            publishedAt: video.snippet?.publishedAt || "",
 
             thumbnail:
-                video.snippet.thumbnails.maxres?.url ||
-                video.snippet.thumbnails.high?.url ||
-                video.snippet.thumbnails.medium?.url,
+                video.snippet?.thumbnails?.maxres?.url ||
+                video.snippet?.thumbnails?.high?.url ||
+                video.snippet?.thumbnails?.medium?.url ||
+                "",
 
             views: Number(video.statistics?.viewCount || 0),
 
@@ -129,8 +141,6 @@ export default async function handler(req, res) {
         }));
 
 
-        // Cache:
-        // strona nie musi pytać YouTube przy każdym odświeżeniu
         res.setHeader(
             "Cache-Control",
             "s-maxage=1800, stale-while-revalidate=3600"
@@ -142,18 +152,19 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-        console.error(error);
+
+        console.error("YouTube API ERROR:", error);
 
         return res.status(500).json({
-            error: "Server error"
+            error: "Server error",
+            message: error?.message || "Unknown error",
+            name: error?.name || "Unknown error"
         });
     }
 }
 
 
-// Zamienia format ISO 8601 YouTube,
-// np. PT3M42S,
-// na liczbę sekund.
+// Zamiana czasu ISO 8601 na sekundy
 function parseDuration(duration) {
     const match = duration.match(
         /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/
