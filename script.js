@@ -67,6 +67,7 @@ function renderMusic(videos) {
 
         const date = formatDate(video.publishedAt);
         const views = formatViews(video.views);
+        const parsedTitle = parseMusicTitle(video.title);
 
         return `
             <a
@@ -92,9 +93,24 @@ function renderMusic(videos) {
 
                 <div class="music-info">
 
-                    <div class="music-title">
-                        ${escapeHTML(video.title)}
+                    <div class="music-copy">
+
+                        <div class="music-artist">
+                            ${escapeHTML(parsedTitle.artist)}
+                        </div>
+
+                        <div class="music-title">
+                            ${escapeHTML(parsedTitle.title.toUpperCase())}
+                        </div>
+
+                        ${parsedTitle.remix ? `
+                            <div class="music-remix">
+                                ${escapeHTML(parsedTitle.remix.toUpperCase())}
+                            </div>
+                        ` : ""}
+
                     </div>
+
 
                     <div class="music-meta">
 
@@ -176,6 +192,45 @@ function renderMusic(videos) {
             </a>
         `;
     }).join("");
+}
+
+
+function parseMusicTitle(fullTitle) {
+    const title = String(fullTitle || "").trim();
+
+    let artist = "";
+    let mainTitle = title;
+    let remix = "";
+
+    const remixMatch = mainTitle.match(
+        /\s*(\(PUMPSOUND\s+REMIX\))\s*$/i
+    );
+
+    if (remixMatch) {
+        remix = remixMatch[1];
+
+        mainTitle = mainTitle
+            .slice(0, remixMatch.index)
+            .trim();
+    }
+
+    const separatorIndex = mainTitle.indexOf(" - ");
+
+    if (separatorIndex !== -1) {
+        artist = mainTitle
+            .slice(0, separatorIndex)
+            .trim();
+
+        mainTitle = mainTitle
+            .slice(separatorIndex + 3)
+            .trim();
+    }
+
+    return {
+        artist,
+        title: mainTitle,
+        remix
+    };
 }
 
 
