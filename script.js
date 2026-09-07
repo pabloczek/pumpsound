@@ -723,7 +723,7 @@ function formatViews(views) {
             .replace(
                 ".0",
                 ""
-            ) + "B";
+            ) + "B+";
 
     }
 
@@ -741,7 +741,7 @@ function formatViews(views) {
             .replace(
                 ".0",
                 ""
-            ) + "M";
+            ) + "M+";
 
     }
 
@@ -759,7 +759,7 @@ function formatViews(views) {
             .replace(
                 ".0",
                 ""
-            ) + "K";
+            ) + "K+";
 
     }
 
