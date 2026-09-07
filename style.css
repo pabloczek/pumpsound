@@ -242,39 +242,33 @@ nav a:hover {
 
 .music {
     min-height: 100vh;
-
     background: #0a0a0a;
 }
 
 .music-intro {
     max-width: 1450px;
-    margin: 0 auto 100px;
+    margin: 0 auto 75px;
 
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
 
-    gap: 80px;
+    gap: 70px;
 }
 
 .music-heading {
-    font-size: clamp(75px, 10vw, 165px);
-
-    line-height: 0.78;
-
+    font-size: clamp(65px, 8vw, 130px);
+    line-height: 0.8;
     letter-spacing: -0.08em;
-
     font-weight: 600;
 }
 
 .music-description {
     max-width: 330px;
-
-    padding-bottom: 8px;
+    padding-bottom: 7px;
 
     font-size: 9px;
     line-height: 1.7;
-
     letter-spacing: 2px;
 
     color: rgba(255,255,255,0.38);
@@ -285,14 +279,12 @@ nav a:hover {
 
 .music-grid {
     max-width: 1450px;
-
     margin: 0 auto;
 
     display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-
-    gap: 80px 35px;
+    gap: 28px;
 }
 
 
@@ -307,10 +299,67 @@ nav a:hover {
     text-decoration: none;
 
     overflow: hidden;
+
+    border: 1px solid rgba(255,255,255,0.13);
+
+    background: #080808;
+
+    transition:
+        transform 0.5s cubic-bezier(.16,1,.3,1),
+        border-color 0.4s ease;
 }
+
+.music-item:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255,255,255,0.38);
+}
+
+
+/* FEATURED */
 
 .music-item:first-child {
     grid-column: 1 / -1;
+
+    height: 390px;
+}
+
+.music-item:first-child::before {
+    content: "01 / 05";
+
+    position: absolute;
+
+    top: 19px;
+    left: 21px;
+
+    z-index: 5;
+
+    font-size: 9px;
+    letter-spacing: 3px;
+
+    color: rgba(255,255,255,0.8);
+}
+
+
+/* SMALL CARD */
+
+.music-item:not(:first-child) {
+    height: 285px;
+}
+
+.music-item:not(:first-child)::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 1px;
+
+    background: rgba(255,255,255,0.18);
+
+    z-index: 5;
 }
 
 
@@ -320,16 +369,11 @@ nav a:hover {
     position: relative;
 
     width: 100%;
-
-    aspect-ratio: 16 / 9;
+    height: 100%;
 
     overflow: hidden;
 
     background: #111;
-}
-
-.music-item:not(:first-child) .music-thumbnail {
-    aspect-ratio: 1.35 / 1;
 }
 
 .music-thumbnail img {
@@ -346,35 +390,60 @@ nav a:hover {
 }
 
 .music-item:first-child .music-thumbnail img {
-    filter: grayscale(8%);
+    filter: brightness(0.78);
+}
+
+.music-item:not(:first-child) .music-thumbnail img {
+    filter: brightness(0.72);
 }
 
 .music-item:hover .music-thumbnail img {
-    transform: scale(1.035);
-
-    filter: grayscale(0%);
+    transform: scale(1.045);
+    filter: brightness(0.9);
 }
 
 
-/* FEATURED NUMBER */
+/* IMAGE GRADIENT */
 
-.music-item:first-child::before {
-    content: "01";
+.music-thumbnail::after {
+    content: "";
 
     position: absolute;
 
-    top: 20px;
-    left: 20px;
+    inset: 0;
 
-    z-index: 3;
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.05) 25%,
+            rgba(0,0,0,0.1) 45%,
+            rgba(0,0,0,0.88) 100%
+        );
+
+    transition: opacity 0.4s ease;
+}
+
+.music-item:hover .music-thumbnail::after {
+    opacity: 0.9;
+}
+
+
+/* NUMBER FOR SMALL CARDS */
+
+.music-item:not(:first-child) .music-number {
+    position: absolute;
+
+    top: 17px;
+    left: 18px;
+
+    z-index: 6;
 
     font-size: 9px;
-
     letter-spacing: 3px;
 
-    color: rgba(255,255,255,0.75);
-
-    mix-blend-mode: difference;
+    color: rgba(255,255,255,0.8);
 }
 
 
@@ -386,29 +455,40 @@ nav a:hover {
     left: 50%;
     top: 50%;
 
-    transform: translate(-50%, -50%) scale(0.9);
+    transform: translate(-50%, -50%) scale(0.8);
 
-    width: 72px;
-    height: 72px;
+    width: 58px;
+    height: 58px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border: 1px solid rgba(255,255,255,0.45);
+    border: 1px solid rgba(255,255,255,0.55);
 
     border-radius: 50%;
 
-    background: rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.18);
+    backdrop-filter: blur(5px);
 
-    font-size: 18px;
+    font-size: 14px;
 
     opacity: 0;
 
+    z-index: 6;
+
     transition:
-        opacity 0.45s ease,
-        transform 0.6s cubic-bezier(.16,1,.3,1),
-        background 0.4s ease;
+        opacity 0.35s ease,
+        transform 0.55s cubic-bezier(.16,1,.3,1),
+        background 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.music-item:first-child .music-play {
+    width: 66px;
+    height: 66px;
+
+    font-size: 17px;
 }
 
 .music-item:hover .music-play {
@@ -417,37 +497,48 @@ nav a:hover {
     transform: translate(-50%, -50%) scale(1);
 
     background: rgba(0,0,0,0.3);
+
+    border-color: rgba(255,255,255,0.9);
 }
 
 
 /* MUSIC INFO */
 
 .music-info {
-    position: relative;
+    position: absolute;
 
-    padding: 24px 0 22px;
+    left: 22px;
+    right: 22px;
+    bottom: 20px;
 
-    border-bottom: 1px solid rgba(255,255,255,0.15);
+    z-index: 7;
 }
 
 .music-item:first-child .music-info {
-    padding-top: 30px;
+    left: 30px;
+    right: 30px;
+    bottom: 24px;
 }
 
 .music-title {
-    max-width: 90%;
+    max-width: calc(100% - 35px);
 
-    font-size: clamp(25px, 3vw, 48px);
+    font-size: 15px;
+    line-height: 1.15;
 
-    line-height: 0.95;
+    letter-spacing: -0.025em;
 
-    letter-spacing: -0.045em;
+    font-weight: 600;
 
-    font-weight: 500;
+    color: #fff;
 }
 
 .music-item:first-child .music-title {
-    font-size: clamp(40px, 5vw, 78px);
+    max-width: 760px;
+
+    font-size: clamp(25px, 3vw, 44px);
+
+    line-height: 0.95;
 }
 
 .music-meta {
@@ -455,15 +546,22 @@ nav a:hover {
 
     align-items: center;
 
-    gap: 30px;
+    gap: 22px;
 
-    margin-top: 18px;
+    margin-top: 12px;
 
     font-size: 8px;
 
-    letter-spacing: 3px;
+    letter-spacing: 2px;
 
-    color: rgba(255,255,255,0.38);
+    color: rgba(255,255,255,0.55);
+
+    text-transform: uppercase;
+}
+
+.music-meta span {
+    display: inline-flex;
+    align-items: center;
 }
 
 
@@ -473,9 +571,11 @@ nav a:hover {
     position: absolute;
 
     right: 0;
-    bottom: 24px;
+    bottom: 0;
 
-    font-size: 23px;
+    z-index: 8;
+
+    font-size: 21px;
 
     color: rgba(255,255,255,0.75);
 
@@ -485,7 +585,7 @@ nav a:hover {
 }
 
 .music-item:hover .music-arrow {
-    transform: translate(6px,-6px);
+    transform: translate(5px,-5px);
 
     color: white;
 }
@@ -496,9 +596,9 @@ nav a:hover {
 .music-footer {
     max-width: 1450px;
 
-    margin: 100px auto 0;
+    margin: 65px auto 0;
 
-    padding-top: 25px;
+    padding-top: 22px;
 
     border-top: 1px solid rgba(255,255,255,0.18);
 
@@ -559,6 +659,8 @@ nav a:hover {
 
 
 /* RELEASE */
+
+
 
 .release {
     min-height: 100vh;
