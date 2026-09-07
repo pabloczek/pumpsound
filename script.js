@@ -5,8 +5,8 @@ const translations = {
         "nav.about": "ABOUT",
         "nav.contact": "CONTACT",
 
-        "hero.kicker": "MUSIC PRODUCER / ARTIST",
-        "hero.subtitle": "FEEL THE ENERGY.",
+        "hero.kicker": "MUSIC PRODUCER FROM POLAND",
+        "hero.subtitle": "POLISH SOUND. GLOBAL REACH.",
         "hero.listen": "LISTEN",
         "hero.scroll": "SCROLL TO EXPLORE",
         "hero.scrollAria": "Scroll to explore",
@@ -47,8 +47,8 @@ const translations = {
         "nav.about": "O MNIE",
         "nav.contact": "KONTAKT",
 
-        "hero.kicker": "PRODUCENT MUZYCZNY / ARTYSTA",
-        "hero.subtitle": "POCZUJ ENERGIĘ.",
+        "hero.kicker": "PRODUCENT MUZYCZNY Z POLSKI",
+        "hero.subtitle": "POLSKIE BRZMIENIE. GLOBALNY ZASIĘG.",
         "hero.listen": "SŁUCHAJ",
         "hero.scroll": "PRZEJDŹ DALEJ",
         "hero.scrollAria": "Przewiń dalej",
