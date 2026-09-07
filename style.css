@@ -282,9 +282,9 @@ nav a:hover {
     margin: 0 auto;
 
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 
-    gap: 58px 35px;
+    gap: 52px 35px;
 }
 
 
@@ -306,6 +306,10 @@ nav a:hover {
     transition: none;
 }
 
+.music-item:first-child {
+    grid-column: 1 / -1;
+}
+
 
 /* MUSIC THUMBNAIL */
 
@@ -317,7 +321,9 @@ nav a:hover {
 
     overflow: hidden;
 
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 12px;
+
     background: #000;
 }
 
@@ -334,7 +340,7 @@ nav a:hover {
 }
 
 .music-item:hover .music-thumbnail {
-    border-color: #fff;
+    border-color: rgba(255,255,255,0.38);
 }
 
 .music-item:hover .music-thumbnail img {
@@ -413,7 +419,7 @@ nav a:hover {
     letter-spacing: 0.06em;
     text-transform: uppercase;
 
-    color: var(--muted);
+    color: rgba(255,255,255,0.42);
 }
 
 .music-date,
@@ -1211,7 +1217,8 @@ footer {
     }
 
     .music-grid {
-        gap: 55px 25px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 42px 25px;
     }
 
     .collaboration-grid {

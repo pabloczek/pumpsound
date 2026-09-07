@@ -25,9 +25,9 @@ async function loadYouTubeData() {
             }
         }
 
-        // Wyświetlenie najnowszych numerów
+        // Wyświetlenie 4 najnowszych utworów
         if (data.videos) {
-            renderMusic(data.videos);
+            renderMusic(data.videos.slice(0, 4));
         }
 
     } catch (error) {
@@ -75,7 +75,6 @@ function renderMusic(videos) {
                 rel="noopener noreferrer"
                 class="music-item"
             >
-
                 <div class="music-thumbnail">
 
                     <img
@@ -100,60 +99,74 @@ function renderMusic(videos) {
                     <div class="music-meta">
 
                         <span class="music-date">
-
                             <svg
+                                width="11"
+                                height="11"
                                 viewBox="0 0 24 24"
                                 fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                xmlns="http://www.w3.org/2000/svg"
                                 aria-hidden="true"
                             >
                                 <rect
                                     x="3"
-                                    y="4.5"
+                                    y="4"
                                     width="18"
-                                    height="16"
+                                    height="17"
                                     rx="2"
-                                ></rect>
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                />
 
                                 <path
-                                    d="M16 2.5v4M8 2.5v4M3 9.5h18"
-                                ></path>
+                                    d="M16 2V6"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                />
 
+                                <path
+                                    d="M8 2V6"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                />
+
+                                <path
+                                    d="M3 10H21"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                />
                             </svg>
 
                             ${date}
-
                         </span>
 
 
                         <span class="music-views">
-
                             <svg
+                                width="12"
+                                height="12"
                                 viewBox="0 0 24 24"
                                 fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                xmlns="http://www.w3.org/2000/svg"
                                 aria-hidden="true"
                             >
                                 <path
-                                    d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"
-                                ></path>
+                                    d="M2.5 12C2.5 12 6 5.5 12 5.5C18 5.5 21.5 12 21.5 12C21.5 12 18 18.5 12 18.5C6 18.5 2.5 12 2.5 12Z"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                />
 
                                 <circle
                                     cx="12"
                                     cy="12"
-                                    r="2.5"
-                                ></circle>
-
+                                    r="2.8"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                />
                             </svg>
 
-                            ${views} VIEWS
-
+                            ${views}
                         </span>
 
                     </div>
@@ -162,7 +175,6 @@ function renderMusic(videos) {
 
             </a>
         `;
-
     }).join("");
 }
 
