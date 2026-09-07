@@ -10,6 +10,7 @@ html {
 
 body {
     position: relative;
+    isolation: isolate;
     background: #070707;
     color: #f5f5f5;
     font-family: Arial, Helvetica, sans-serif;
@@ -26,33 +27,25 @@ body::before {
     inset: 0;
 
     pointer-events: none;
-    z-index: 1;
+    z-index: 0;
 
     opacity: 0.035;
 
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
-/* CONTENT ABOVE GRAIN */
-.hero > *,
-.music > *,
-.visuals > *,
-.about > *,
-.contact > *,
-footer > * {
+/* ALL PAGE CONTENT ABOVE GRAIN */
+body > * {
     position: relative;
-    z-index: 2;
+    z-index: 1;
 }
 
-/* Keep media above grain as well. */
+/* Keep interactive media safely above the grain layer. */
 .music-thumbnail,
-.music-thumbnail img,
 .video-image,
-.video-image img,
-.collaboration-image,
-.collaboration-image img {
+.collaboration-image {
     position: relative;
-    z-index: 3;
+    z-index: 2;
 }
 
 
@@ -366,8 +359,8 @@ nav a:hover {
         filter 0.6s ease;
 }
 
-.music-item:hover {
-    top: -7px;
+.music-item {
+    position: relative;
 }
 
 .music-item:hover .music-thumbnail {
@@ -383,11 +376,12 @@ nav a:hover {
 /* MUSIC PLAY / YOUTUBE */
 .music-play {
     position: absolute;
+    z-index: 4;
     top: 50%;
     left: 50%;
 
-    width: 82px;
-    height: 82px;
+    width: 68px;
+    height: 68px;
 
     display: flex;
     align-items: center;
@@ -397,11 +391,11 @@ nav a:hover {
     background: rgba(0,0,0,0.18);
 
     opacity: 0;
-    transform: translate(-50%, -50%) translateY(10px) scale(0.88);
+    transform: translate(-50%, -50%) translateY(10px) scale(0.72);
 
     transition:
         opacity 0.4s ease,
-        transform 0.6s cubic-bezier(.16,1,.3,1),
+        transform 0.55s cubic-bezier(.16,1,.3,1),
         background 0.4s ease;
 
     pointer-events: none;
@@ -433,15 +427,13 @@ nav a:hover {
 
     transform: rotate(-45deg);
     opacity: 0;
-
-    transition: opacity 0.25s ease;
 }
 
 .music-youtube-icon {
     position: relative;
     z-index: 2;
 
-    width: 34px;
+    width: 30px;
     height: auto;
     display: block;
 }
@@ -667,6 +659,7 @@ nav a:hover {
 
 .video-overlay {
     position: absolute;
+    z-index: 4;
     inset: 0;
 
     display: flex;
@@ -963,6 +956,7 @@ nav a:hover {
 
 .collaboration-overlay {
     position: absolute;
+    z-index: 4;
     inset: 0;
 
     display: flex;
