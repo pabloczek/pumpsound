@@ -20,12 +20,22 @@
             PUMPSOUND
         </div>
 
-        <nav>
-            <a href="#music">MUSIC</a>
-            <a href="#visuals">VIDEOS</a>
-            <a href="#about">ABOUT</a>
-            <a href="#contact">CONTACT</a>
-        </nav>
+        <div class="header-right">
+
+            <nav>
+                <a href="#music" data-i18n="nav.music">MUSIC</a>
+                <a href="#visuals" data-i18n="nav.videos">VIDEOS</a>
+                <a href="#about" data-i18n="nav.about">ABOUT</a>
+                <a href="#contact" data-i18n="nav.contact">CONTACT</a>
+            </nav>
+
+            <div class="language-switcher" aria-label="Language selector">
+                <button type="button" class="language-button active" data-language="en" aria-label="English">EN</button>
+                <span class="language-divider">/</span>
+                <button type="button" class="language-button" data-language="pl" aria-label="Polski">PL</button>
+            </div>
+
+        </div>
 
     </header>
 
@@ -35,7 +45,7 @@
     <section class="hero">
 
         <div class="hero-small">
-            MUSIC PRODUCER / ARTIST
+            <span data-i18n="hero.kicker">MUSIC PRODUCER / ARTIST</span>
         </div>
 
         <h1>
@@ -43,16 +53,16 @@
         </h1>
 
         <div class="hero-subtitle">
-            FEEL THE ENERGY.
+            <span data-i18n="hero.subtitle">FEEL THE ENERGY.</span>
         </div>
 
         <a href="#music" class="hero-button">
-            LISTEN
+            <span data-i18n="hero.listen">LISTEN</span>
             <span class="arrow">↗</span>
         </a>
 
-        <a href="#music" class="hero-scroll" aria-label="Scroll to explore">
-            <span>SCROLL TO EXPLORE</span>
+        <a href="#music" class="hero-scroll" aria-label="Scroll to explore" data-i18n-aria="hero.scrollAria">
+            <span data-i18n="hero.scroll">SCROLL TO EXPLORE</span>
             <span class="hero-scroll-arrow" aria-hidden="true"></span>
         </a>
 
@@ -69,9 +79,7 @@
                 01
             </span>
 
-            <span class="section-label">
-                MUSIC
-            </span>
+            <span class="section-label" data-i18n="sections.music">MUSIC</span>
 
         </div>
 
@@ -79,13 +87,13 @@
         <div class="music-intro">
 
             <div class="music-heading">
-                LATEST<br>
-                RELEASES.
+                <span data-i18n="music.heading">LATEST<br>
+                RELEASES.</span>
             </div>
 
             <div class="music-description">
-                THE LATEST MUSIC FROM PUMPSOUND,
-                AUTOMATICALLY UPDATED FROM YOUTUBE.
+                <span data-i18n="music.description">THE LATEST MUSIC FROM PUMPSOUND,
+                AUTOMATICALLY UPDATED FROM YOUTUBE.</span>
             </div>
 
         </div>
@@ -97,7 +105,7 @@
         >
 
             <div class="music-loading">
-                LOADING RELEASES...
+                <span data-i18n="music.loading">LOADING RELEASES...</span>
             </div>
 
         </div>
@@ -118,7 +126,7 @@
             </span>
 
             <span class="section-label">
-                VISUALS
+                <span data-i18n="sections.visuals">VISUALS</span>
             </span>
 
         </div>
@@ -154,7 +162,7 @@
                 <div>
 
                     <div class="video-label">
-                        LATEST VISUAL
+                        <span data-i18n="visuals.latest">LATEST VISUAL</span>
                     </div>
 
                     <h3>
@@ -188,9 +196,7 @@
                 03
             </span>
 
-            <span class="section-label">
-                ABOUT
-            </span>
+            <span class="section-label" data-i18n="sections.about">ABOUT</span>
 
         </div>
 
@@ -202,20 +208,20 @@
             <div>
 
                 <div class="about-kicker">
-                    THE PROJECT
+                    <span data-i18n="about.kicker">THE PROJECT</span>
                 </div>
 
                 <h2>
-                    MUSIC<br>
+                    <span data-i18n="about.heading">MUSIC<br>
                     WITHOUT<br>
-                    LIMITS.
+                    LIMITS.</span>
                 </h2>
 
             </div>
 
 
             <p>
-                PUMPSOUND is a music producer and artist creating modern club sounds that combine high energy, polished production and a strong sense of current trends.
+                <span data-i18n="about.bio">PUMPSOUND is a music producer and artist creating modern club sounds that combine high energy, polished production and a strong sense of current trends.</span>
             </p>
 
         </div>
@@ -228,11 +234,11 @@
             <div class="collaborations-heading">
 
                 <span>
-                    SELECTED COLLABORATIONS
+                    <span data-i18n="about.collaborations">SELECTED COLLABORATIONS</span>
                 </span>
 
                 <span>
-                    06 ARTISTS
+                    <span data-i18n="about.artists">06 ARTISTS</span>
                 </span>
 
             </div>
@@ -445,7 +451,7 @@
                 </div>
 
                 <div class="about-stat-label">
-                    TOTAL YOUTUBE VIEWS
+                    <span data-i18n="stats.views">TOTAL YOUTUBE VIEWS</span>
                 </div>
 
             </div>
@@ -461,7 +467,7 @@
                 </div>
 
                 <div class="about-stat-label">
-                    YOUTUBE SUBSCRIBERS
+                    <span data-i18n="stats.subscribers">YOUTUBE SUBSCRIBERS</span>
                 </div>
 
             </div>
@@ -474,7 +480,7 @@
                 </div>
 
                 <div class="about-stat-label">
-                    MONTHLY SPOTIFY LISTENERS
+                    <span data-i18n="stats.spotify">MONTHLY SPOTIFY LISTENERS</span>
                 </div>
 
             </div>
@@ -487,7 +493,7 @@
                 </div>
 
                 <div class="about-stat-label">
-                    AUDIENCE & REACH
+                    <span data-i18n="stats.reach">AUDIENCE & REACH</span>
                 </div>
 
             </div>
@@ -506,9 +512,7 @@
                 04
             </span>
 
-            <span class="section-label">
-                CONTACT
-            </span>
+            <span class="section-label" data-i18n="sections.contact">CONTACT</span>
 
         </div>
 
@@ -516,8 +520,8 @@
         <div class="contact-content">
 
             <h2>
-                LET'S WORK<br>
-                TOGETHER.
+                <span data-i18n="contact.heading">LET'S WORK<br>
+                TOGETHER.</span>
             </h2>
 
             <a
@@ -537,11 +541,11 @@
     <footer>
 
         <span>
-            © 2026 PUMPSOUND
+            <span data-i18n="footer.copyright">© 2026 PUMPSOUND</span>
         </span>
 
         <span>
-            POLAND
+            <span data-i18n="footer.poland">POLAND</span>
         </span>
 
     </footer>
