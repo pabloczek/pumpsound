@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
         // 1. Pobieramy kanał PUMPSOUND
         const channelParams = new URLSearchParams({
-            part: "contentDetails",
+            part: "id",
             forHandle: "@pumpsound",
             key: apiKey
         });
@@ -34,41 +34,45 @@ export default async function handler(req, res) {
             });
         }
 
-        const uploadsPlaylistId =
-            channelData.items[0].contentDetails.relatedPlaylists.uploads;
+        const channelId = channelData.items[0].id;
 
 
-        // 2. Pobieramy ostatnie 15 filmów
-        const playlistParams = new URLSearchParams({
-            part: "snippet,contentDetails",
-            playlistId: uploadsPlaylistId,
-            maxResults: "15",
+        // 2. Pobieramy 50 najnowszych PUBLICZNYCH filmów
+        //
+        // search.list nie zwraca filmów usuniętych/prywatnych,
+        // więc nie powinny trafiać do naszej sekcji MUSIC.
+        const searchParams = new URLSearchParams({
+            part: "snippet",
+            channelId: channelId,
+            type: "video",
+            order: "date",
+            maxResults: "50",
             key: apiKey
         });
 
-        const playlistResponse = await fetch(
-            `https://www.googleapis.com/youtube/v3/playlistItems?${playlistParams.toString()}`
+        const searchResponse = await fetch(
+            `https://www.googleapis.com/youtube/v3/search?${searchParams.toString()}`
         );
 
-        const playlistData = await playlistResponse.json();
+        const searchData = await searchResponse.json();
 
-        if (!playlistResponse.ok) {
-            return res.status(playlistResponse.status).json({
-                error: "YouTube playlist API error",
-                details: playlistData
+        if (!searchResponse.ok) {
+            return res.status(searchResponse.status).json({
+                error: "YouTube search API error",
+                details: searchData
             });
         }
 
-        if (!playlistData.items) {
-            return res.status(500).json({
-                error: "YouTube playlist returned no items"
+        if (!searchData.items || searchData.items.length === 0) {
+            return res.status(200).json({
+                videos: []
             });
         }
 
 
-        // 3. Pobieramy ID filmów
-        const videoIds = playlistData.items
-            .map(item => item.contentDetails?.videoId)
+        // 3. Pobieramy ID znalezionych filmów
+        const videoIds = searchData.items
+            .map(item => item.id?.videoId)
             .filter(Boolean);
 
         if (videoIds.length === 0) {
@@ -79,6 +83,7 @@ export default async function handler(req, res) {
 
 
         // 4. Pobieramy szczegóły filmów
+        //    potrzebne do długości i liczby wyświetleń
         const videoParams = new URLSearchParams({
             part: "snippet,contentDetails,statistics",
             id: videoIds.join(","),
@@ -98,14 +103,10 @@ export default async function handler(req, res) {
             });
         }
 
-        if (!videoData.items) {
-            return res.status(500).json({
-                error: "YouTube videos returned no items"
-            });
-        }
-
 
         // 5. Pomijamy Shortsy
+        //
+        // Bierzemy tylko filmy dłuższe niż 60 sekund.
         const musicVideos = videoData.items
             .filter(video => {
                 if (!video.contentDetails?.duration) {
@@ -118,10 +119,16 @@ export default async function handler(req, res) {
 
                 return duration > 60;
             })
+            .sort((a, b) => {
+                return (
+                    new Date(b.snippet.publishedAt) -
+                    new Date(a.snippet.publishedAt)
+                );
+            })
             .slice(0, 5);
 
 
-        // 6. Przygotowujemy dane dla strony
+        // 6. Przygotowujemy dane dla frontendu
         const videos = musicVideos.map(video => ({
             id: video.id,
 
@@ -135,12 +142,15 @@ export default async function handler(req, res) {
                 video.snippet?.thumbnails?.medium?.url ||
                 "",
 
-            views: Number(video.statistics?.viewCount || 0),
+            views: Number(
+                video.statistics?.viewCount || 0
+            ),
 
             url: `https://www.youtube.com/watch?v=${video.id}`
         }));
 
 
+        // Cache na 30 minut
         res.setHeader(
             "Cache-Control",
             "s-maxage=1800, stale-while-revalidate=3600"
@@ -153,7 +163,10 @@ export default async function handler(req, res) {
 
     } catch (error) {
 
-        console.error("YouTube API ERROR:", error);
+        console.error(
+            "YouTube API ERROR:",
+            error
+        );
 
         return res.status(500).json({
             error: "Server error",
@@ -166,6 +179,7 @@ export default async function handler(req, res) {
 
 // Zamiana czasu ISO 8601 na sekundy
 function parseDuration(duration) {
+
     const match = duration.match(
         /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/
     );
