@@ -24,8 +24,14 @@ async function loadYouTubeData() {
             }
         }
 
-        if (data.videos) {
-            renderMusic(data.videos);
+        if (Array.isArray(data.videos)) {
+            const latestVideos = [...data.videos]
+                .sort((a, b) => {
+                    return new Date(b.publishedAt) - new Date(a.publishedAt);
+                })
+                .slice(0, 4);
+
+            renderMusic(latestVideos);
         }
 
     } catch (error) {
@@ -61,7 +67,7 @@ function renderMusic(videos) {
         return;
     }
 
-    musicList.innerHTML = videos.slice(0, 4).map((video) => {
+    musicList.innerHTML = videos.map((video) => {
         const date = formatDate(video.publishedAt);
         const views = formatViews(video.views);
         const parsedTitle = parseMusicTitle(video.title);
@@ -108,6 +114,7 @@ function renderMusic(videos) {
                     <div class="music-meta">
 
                         <span class="music-date">
+
                             <svg
                                 width="11"
                                 height="11"
@@ -148,9 +155,11 @@ function renderMusic(videos) {
                             </svg>
 
                             ${date}
+
                         </span>
 
                         <span class="music-views">
+
                             <svg
                                 width="12"
                                 height="12"
@@ -175,6 +184,7 @@ function renderMusic(videos) {
                             </svg>
 
                             ${views}
+
                         </span>
 
                     </div>
@@ -242,42 +252,46 @@ function formatDate(dateString) {
 
 
 function formatViews(views) {
-    if (views >= 1000000000) {
+    const numericViews = Number(views) || 0;
+
+    if (numericViews >= 1000000000) {
         return (
-            views / 1000000000
+            numericViews / 1000000000
         ).toFixed(1).replace(".0", "") + "B+";
     }
 
-    if (views >= 1000000) {
+    if (numericViews >= 1000000) {
         return (
-            views / 1000000
+            numericViews / 1000000
         ).toFixed(1).replace(".0", "") + "M+";
     }
 
-    if (views >= 1000) {
+    if (numericViews >= 1000) {
         return (
-            views / 1000
+            numericViews / 1000
         ).toFixed(1).replace(".0", "") + "K+";
     }
 
-    return Number(views).toLocaleString("en-US");
+    return numericViews.toLocaleString("en-US");
 }
 
 
 function formatSubscribers(subscribers) {
-    if (subscribers >= 1000000) {
+    const numericSubscribers = Number(subscribers) || 0;
+
+    if (numericSubscribers >= 1000000) {
         return (
-            subscribers / 1000000
+            numericSubscribers / 1000000
         ).toFixed(1).replace(".0", "") + "M+";
     }
 
-    if (subscribers >= 1000) {
+    if (numericSubscribers >= 1000) {
         return (
-            subscribers / 1000
+            numericSubscribers / 1000
         ).toFixed(1).replace(".0", "") + "K+";
     }
 
-    return Number(subscribers).toLocaleString("en-US");
+    return numericSubscribers.toLocaleString("en-US");
 }
 
 
