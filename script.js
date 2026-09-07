@@ -87,7 +87,21 @@ function renderMusic(videos) {
                         loading="lazy"
                     >
 
-                    <div class="music-play" aria-hidden="true"></div>
+                    <div class="music-play" aria-hidden="true">
+                        <svg
+                            class="music-youtube-icon"
+                            viewBox="0 0 68 48"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                fill="#fff"
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                d="M66.5 7.5C65.8 4.7 63.3 2.5 60.4 1.8C55.1 0.5 34 0.5 34 0.5C34 0.5 12.9 0.5 7.6 1.8C4.7 2.5 2.2 4.7 1.5 7.5C0.2 12.8 0.2 24 0.2 24C0.2 24 0.2 35.2 1.5 40.5C2.2 43.3 4.7 45.5 7.6 46.2C12.9 47.5 34 47.5 34 47.5C34 47.5 55.1 47.5 60.4 46.2C63.3 45.5 65.8 43.3 66.5 40.5C67.8 35.2 67.8 24 67.8 24C67.8 24 67.8 12.8 66.5 7.5ZM27 34.5V13.5L45 24L27 34.5Z"
+                            />
+                        </svg>
+                    </div>
 
                 </div>
 
