@@ -420,6 +420,7 @@ nav a:hover {
 
 .music-title {
     max-width: 100%;
+    white-space: nowrap;
 
     font-size: clamp(24px, 2.6vw, 42px);
     line-height: 0.9;
@@ -1250,6 +1251,7 @@ footer {
     .music-item:first-child .music-title {
         font-size: 7vw;
         line-height: 0.9;
+        white-space: nowrap;
     }
 
     .music-remix,
