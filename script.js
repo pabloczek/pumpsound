@@ -281,7 +281,8 @@ async function loadYouTubeData() {
 
                 viewsElement.textContent =
                     formatViews(
-                        data.views
+                        data.views,
+                        true
                     );
 
             }
@@ -704,10 +705,13 @@ function formatDate(dateString) {
 }
 
 
-function formatViews(views) {
+function formatViews(views, showPlus = false) {
 
     const numericViews =
         Number(views) || 0;
+
+    const suffix =
+        showPlus ? "+" : "";
 
 
     if (
@@ -723,7 +727,7 @@ function formatViews(views) {
             .replace(
                 ".0",
                 ""
-            ) + "B+";
+            ) + "B" + suffix;
 
     }
 
@@ -741,7 +745,7 @@ function formatViews(views) {
             .replace(
                 ".0",
                 ""
-            ) + "M+";
+            ) + "M" + suffix;
 
     }
 
@@ -759,13 +763,15 @@ function formatViews(views) {
             .replace(
                 ".0",
                 ""
-            ) + "K+";
+            ) + "K" + suffix;
 
     }
 
 
-    return numericViews.toLocaleString(
-        "en-US"
+    return (
+        numericViews.toLocaleString(
+            "en-US"
+        ) + suffix
     );
 
 }
