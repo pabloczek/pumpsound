@@ -98,6 +98,63 @@ nav a:hover {
 }
 
 
+/* HEADER RIGHT / LANGUAGE SWITCHER */
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+}
+
+.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 30px;
+    padding: 0 11px;
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.035);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.language-switcher:hover {
+    border-color: rgba(255,255,255,0.42);
+    background: rgba(255,255,255,0.07);
+}
+
+.language-button {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: rgba(255,255,255,0.38);
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: color 0.25s ease;
+}
+
+.language-button:hover {
+    color: rgba(255,255,255,0.8);
+}
+
+.language-button.active {
+    color: #fff;
+}
+
+.language-divider {
+    color: rgba(255,255,255,0.2);
+    font-size: 9px;
+    line-height: 1;
+    user-select: none;
+}
+
+
 /* HERO */
 
 .hero {
@@ -1525,4 +1582,25 @@ footer {
         padding: 25px 22px;
     }
 
+}
+/* LANGUAGE SWITCHER MOBILE */
+
+@media (max-width: 768px) {
+    .header-right {
+        gap: 16px;
+    }
+
+    nav {
+        gap: 18px;
+    }
+
+    .language-switcher {
+        height: 28px;
+        padding: 0 9px;
+        gap: 6px;
+    }
+
+    .language-button {
+        font-size: 8px;
+    }
 }
