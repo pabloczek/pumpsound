@@ -33,6 +33,28 @@ body::before {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
+/* CONTENT ABOVE GRAIN */
+.hero > *,
+.music > *,
+.visuals > *,
+.about > *,
+.contact > *,
+footer > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Keep media above grain as well. */
+.music-thumbnail,
+.music-thumbnail img,
+.video-image,
+.video-image img,
+.collaboration-image,
+.collaboration-image img {
+    position: relative;
+    z-index: 3;
+}
+
 
 /* HEADER */
 
@@ -363,28 +385,91 @@ nav a:hover {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0.55);
-    width: 58px;
-    height: 42px;
+
+    width: 82px;
+    height: 82px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    border-radius: 50%;
+    background: rgba(0,0,0,0.18);
+
     opacity: 0;
+    transform: translate(-50%, -50%) translateY(10px) scale(0.88);
+
     transition:
-        opacity 0.18s ease,
-        transform 0.6s cubic-bezier(.16,1,.3,1);
+        opacity 0.4s ease,
+        transform 0.6s cubic-bezier(.16,1,.3,1),
+        background 0.4s ease;
+
     pointer-events: none;
 }
 
+.music-play::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.35);
+
+    transition:
+        transform 0.7s cubic-bezier(.16,1,.3,1),
+        border-color 0.4s ease;
+}
+
+.music-play::after {
+    content: "";
+
+    position: absolute;
+    inset: -1px;
+
+    border-radius: 50%;
+    border: 1px solid transparent;
+    border-top-color: white;
+
+    transform: rotate(-45deg);
+    opacity: 0;
+
+    transition: opacity 0.25s ease;
+}
+
 .music-youtube-icon {
-    width: 58px;
+    position: relative;
+    z-index: 2;
+
+    width: 34px;
     height: auto;
     display: block;
 }
 
 .music-item:hover .music-play {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) translateY(0) scale(1);
+    background: rgba(0,0,0,0.28);
+}
+
+.music-item:hover .music-play::before {
+    border-color: rgba(255,255,255,0.65);
+    transform: scale(1.12);
+}
+
+.music-item:hover .music-play::after {
+    opacity: 1;
+    animation: musicRingSpin 1s cubic-bezier(.4,0,.2,1) infinite;
+}
+
+@keyframes musicRingSpin {
+    from {
+        transform: rotate(-45deg);
+    }
+
+    to {
+        transform: rotate(315deg);
+    }
 }
 
 .music-info {
@@ -415,11 +500,11 @@ nav a:hover {
     max-width: 100%;
     white-space: nowrap;
 
-    font-size: clamp(18px, 1.8vw, 30px);
-    line-height: 1;
+    font-size: clamp(24px, 3vw, 48px);
+    line-height: 0.9;
 
-    letter-spacing: -0.02em;
-    font-weight: 400;
+    letter-spacing: -0.055em;
+    font-weight: 600;
 
     color: #fff;
     white-space: nowrap;
@@ -484,8 +569,8 @@ nav a:hover {
 }
 
 .music-item:first-child .music-title {
-    font-size: clamp(30px, 3.5vw, 52px);
-    line-height: 0.95;
+    font-size: clamp(30px, 4vw, 65px);
+    line-height: 0.9;
 }
 
 .music-item:first-child .music-remix {
@@ -1243,10 +1328,11 @@ footer {
 
     .music-title,
     .music-item:first-child .music-title {
-        font-size: 5.2vw;
-        line-height: 1;
+        font-size: 7vw;
+        line-height: 0.9;
         white-space: nowrap;
-        font-weight: 400;
+        font-weight: 600;
+        letter-spacing: -0.055em;
     }
 
     .music-remix,
@@ -1267,12 +1353,12 @@ footer {
     }
 
     .music-play {
-        width: 54px;
-        height: 40px;
+        width: 68px;
+        height: 68px;
     }
 
     .music-youtube-icon {
-        width: 54px;
+        width: 29px;
     }
 
 
