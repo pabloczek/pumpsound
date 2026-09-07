@@ -8,6 +8,16 @@ export default async function handler(req, res) {
             });
         }
 
+        // ID kanałów współpracujących artystów
+        const artistChannels = {
+            majki: "UCTcqn1bL0VNWS04_2FsIRYA",
+            cypis: "UCcmG5FNSGn1RrNAAQLrPsjg",
+            sequento: "UC4YUa9DAmvA0lOT7Lzgu1yw",
+            bekaKsh: "UCJ4drApu4cMIazTtyJa6lsA",
+            cheatz: "UCnLF2KJIMoBOw1vVPONFzTA",
+            diho: "UC89AruE7z06JF9s39_46mqA"
+        };
+
         // 1. Pobieramy kanał PUMPSOUND wraz ze statystykami
         const channelParams = new URLSearchParams({
             part: "id,statistics",
@@ -37,10 +47,73 @@ export default async function handler(req, res) {
         const channel = channelData.items[0];
         const channelId = channel.id;
 
-        const views = Number(channel.statistics?.viewCount || 0);
-        const subscribers = Number(channel.statistics?.subscriberCount || 0);
+        const views = Number(
+            channel.statistics?.viewCount || 0
+        );
 
-        // 2. Pobieramy 50 najnowszych PUBLICZNYCH filmów
+        const subscribers = Number(
+            channel.statistics?.subscriberCount || 0
+        );
+
+        // 2. Pobieramy statystyki wszystkich współpracujących artystów
+        // Jeden request zamiast osobnego requestu dla każdego kanału.
+        const artistChannelIds = Object.values(artistChannels).join(",");
+
+        const artistParams = new URLSearchParams({
+            part: "id,statistics",
+            id: artistChannelIds,
+            key: apiKey
+        });
+
+        const artistResponse = await fetch(
+            `https://www.googleapis.com/youtube/v3/channels?${artistParams.toString()}`
+        );
+
+        const artistData = await artistResponse.json();
+
+        if (!artistResponse.ok) {
+            return res.status(artistResponse.status).json({
+                error: "YouTube artist channels API error",
+                details: artistData
+            });
+        }
+
+        // Przygotowujemy dane artystów
+        const artists = {};
+
+        for (const [artistKey, artistChannelId] of Object.entries(
+            artistChannels
+        )) {
+            const artistChannel = artistData.items?.find(
+                item => item.id === artistChannelId
+            );
+
+            if (!artistChannel) {
+                artists[artistKey] = {
+                    views: null,
+                    subscribers: null
+                };
+
+                continue;
+            }
+
+            const statistics = artistChannel.statistics || {};
+
+            artists[artistKey] = {
+                views: Number(
+                    statistics.viewCount || 0
+                ),
+
+                // YouTube może nie udostępniać liczby subskrybentów.
+                // W takim przypadku zwracamy null zamiast 0.
+                subscribers:
+                    statistics.subscriberCount !== undefined
+                        ? Number(statistics.subscriberCount)
+                        : null
+            };
+        }
+
+        // 3. Pobieramy 50 najnowszych PUBLICZNYCH filmów PUMPSOUND
         const searchParams = new URLSearchParams({
             part: "snippet",
             channelId: channelId,
@@ -72,24 +145,33 @@ export default async function handler(req, res) {
             return res.status(200).json({
                 views,
                 subscribers,
-                videos: []
+                artists,
+                videos: [],
+                updatedAt: new Date().toISOString()
             });
         }
 
-        // 3. Pobieramy ID znalezionych filmów
+        // 4. Pobieramy ID znalezionych filmów
         const videoIds = searchData.items
             .map(item => item.id?.videoId)
             .filter(Boolean);
 
         if (videoIds.length === 0) {
+            res.setHeader(
+                "Cache-Control",
+                "s-maxage=1800, stale-while-revalidate=3600"
+            );
+
             return res.status(200).json({
                 views,
                 subscribers,
-                videos: []
+                artists,
+                videos: [],
+                updatedAt: new Date().toISOString()
             });
         }
 
-        // 4. Pobieramy szczegóły filmów
+        // 5. Pobieramy szczegóły filmów
         const videoParams = new URLSearchParams({
             part: "snippet,contentDetails,statistics",
             id: videoIds.join(","),
@@ -109,7 +191,7 @@ export default async function handler(req, res) {
             });
         }
 
-        // 5. Pomijamy Shortsy
+        // 6. Pomijamy Shortsy
         const musicVideos = videoData.items
             .filter(video => {
                 if (!video.contentDetails?.duration) {
@@ -130,7 +212,7 @@ export default async function handler(req, res) {
             })
             .slice(0, 5);
 
-        // 6. Przygotowujemy dane dla frontendu
+        // 7. Przygotowujemy dane dla frontendu
         const videos = musicVideos.map(video => ({
             id: video.id,
 
@@ -160,7 +242,9 @@ export default async function handler(req, res) {
         return res.status(200).json({
             views,
             subscribers,
-            videos
+            artists,
+            videos,
+            updatedAt: new Date().toISOString()
         });
 
     } catch (error) {
