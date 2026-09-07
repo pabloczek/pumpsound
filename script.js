@@ -107,7 +107,7 @@ function getInitialLanguage() {
 }
 
 
-function applyLanguage(language) {
+function applyLanguage(language, animate = false) {
 
     if (!translations[language]) {
         return;
@@ -167,24 +167,82 @@ function applyLanguage(language) {
 
     });
 
+
+    const languageSwitcher =
+        document.querySelector(
+            ".language-switcher"
+        );
+
+
+    if (languageSwitcher) {
+
+        languageSwitcher.dataset.active =
+            language;
+
+
+        if (animate) {
+
+            languageSwitcher.classList.remove(
+                "is-changing"
+            );
+
+
+            requestAnimationFrame(() => {
+
+                languageSwitcher.classList.add(
+                    "is-changing"
+                );
+
+            });
+
+
+            window.setTimeout(() => {
+
+                languageSwitcher.classList.remove(
+                    "is-changing"
+                );
+
+            }, 350);
+
+        }
+
+    }
+
 }
 
 
 function setupLanguageSwitcher() {
 
-    document.querySelectorAll(".language-button").forEach((button) => {
+    document.querySelectorAll(
+        ".language-button"
+    ).forEach((button) => {
 
-        button.addEventListener("click", () => {
+        button.addEventListener(
+            "click",
+            () => {
 
-            applyLanguage(
-                button.dataset.language
-            );
+                if (
+                    button.dataset.language ===
+                    currentLanguage
+                ) {
+                    return;
+                }
 
-        });
+                applyLanguage(
+                    button.dataset.language,
+                    true
+                );
+
+            }
+        );
 
     });
 
-    applyLanguage(currentLanguage);
+
+    applyLanguage(
+        currentLanguage
+    );
+
 }
 
 
@@ -192,17 +250,23 @@ async function loadYouTubeData() {
 
     try {
 
-        const response = await fetch(
-            "/api/youtube"
-        );
+        const response =
+            await fetch(
+                "/api/youtube"
+            );
+
 
         if (!response.ok) {
+
             throw new Error(
                 "Could not load YouTube data"
             );
+
         }
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
 
 
         if (data.views !== undefined) {
@@ -212,9 +276,14 @@ async function loadYouTubeData() {
                     "#youtube-views"
                 );
 
+
             if (viewsElement) {
+
                 viewsElement.textContent =
-                    formatViews(data.views);
+                    formatViews(
+                        data.views
+                    );
+
             }
 
         }
@@ -227,11 +296,14 @@ async function loadYouTubeData() {
                     "#youtube-subscribers"
                 );
 
+
             if (subscribersElement) {
+
                 subscribersElement.textContent =
                     formatSubscribers(
                         data.subscribers
                     );
+
             }
 
         }
@@ -245,14 +317,19 @@ async function loadYouTubeData() {
 
                         return new Date(
                             b.publishedAt
-                        ) - new Date(
+                        ) -
+                        new Date(
                             a.publishedAt
                         );
 
                     })
                     .slice(0, 4);
 
-            renderMusic(latestVideos);
+
+            renderMusic(
+                latestVideos
+            );
+
         }
 
     } catch (error) {
@@ -262,17 +339,21 @@ async function loadYouTubeData() {
             error
         );
 
+
         const musicList =
             document.querySelector(
                 "#music-list"
             );
+
 
         if (musicList) {
 
             musicList.innerHTML = `
                 <div class="music-loading">
                     ${escapeHTML(
-                        translations[currentLanguage][
+                        translations[
+                            currentLanguage
+                        ][
                             "music.loadError"
                         ]
                     )}
@@ -293,17 +374,23 @@ function renderMusic(videos) {
             "#music-list"
         );
 
+
     if (!musicList) {
         return;
     }
 
 
-    if (!videos || videos.length === 0) {
+    if (
+        !videos ||
+        videos.length === 0
+    ) {
 
         musicList.innerHTML = `
             <div class="music-loading">
                 ${escapeHTML(
-                    translations[currentLanguage][
+                    translations[
+                        currentLanguage
+                    ][
                         "music.noReleases"
                     ]
                 )}
@@ -322,10 +409,12 @@ function renderMusic(videos) {
                     video.publishedAt
                 );
 
+
             const views =
                 formatViews(
                     video.views
                 );
+
 
             const parsedTitle =
                 parseMusicTitle(
@@ -506,8 +595,10 @@ function renderMusic(videos) {
 function parseMusicTitle(fullTitle) {
 
     const title =
-        String(fullTitle || "")
-            .trim();
+        String(
+            fullTitle || ""
+        ).trim();
+
 
     let artist = "";
     let mainTitle = title;
@@ -522,7 +613,9 @@ function parseMusicTitle(fullTitle) {
 
     if (remixMatch) {
 
-        remix = remixMatch[1];
+        remix =
+            remixMatch[1];
+
 
         mainTitle =
             mainTitle
@@ -536,7 +629,9 @@ function parseMusicTitle(fullTitle) {
 
 
     const separatorIndex =
-        mainTitle.indexOf(" - ");
+        mainTitle.indexOf(
+            " - "
+        );
 
 
     if (separatorIndex !== -1) {
@@ -548,6 +643,7 @@ function parseMusicTitle(fullTitle) {
                     separatorIndex
                 )
                 .trim();
+
 
         mainTitle =
             mainTitle
@@ -574,21 +670,34 @@ function formatDate(dateString) {
         return "";
     }
 
+
     const date =
-        new Date(dateString);
+        new Date(
+            dateString
+        );
+
 
     const day =
         String(
             date.getDate()
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
+
 
     const month =
         String(
             date.getMonth() + 1
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
+
 
     const year =
         date.getFullYear();
+
 
     return `${day}.${month}.${year}`;
 
@@ -601,35 +710,56 @@ function formatViews(views) {
         Number(views) || 0;
 
 
-    if (numericViews >= 1000000000) {
+    if (
+        numericViews >=
+        1000000000
+    ) {
 
         return (
-            numericViews / 1000000000
+            numericViews /
+            1000000000
         )
             .toFixed(1)
-            .replace(".0", "") + "B";
+            .replace(
+                ".0",
+                ""
+            ) + "B";
 
     }
 
 
-    if (numericViews >= 1000000) {
+    if (
+        numericViews >=
+        1000000
+    ) {
 
         return (
-            numericViews / 1000000
+            numericViews /
+            1000000
         )
             .toFixed(1)
-            .replace(".0", "") + "M";
+            .replace(
+                ".0",
+                ""
+            ) + "M";
 
     }
 
 
-    if (numericViews >= 1000) {
+    if (
+        numericViews >=
+        1000
+    ) {
 
         return (
-            numericViews / 1000
+            numericViews /
+            1000
         )
             .toFixed(1)
-            .replace(".0", "") + "K";
+            .replace(
+                ".0",
+                ""
+            ) + "K";
 
     }
 
@@ -647,24 +777,38 @@ function formatSubscribers(subscribers) {
         Number(subscribers) || 0;
 
 
-    if (numericSubscribers >= 1000000) {
+    if (
+        numericSubscribers >=
+        1000000
+    ) {
 
         return (
-            numericSubscribers / 1000000
+            numericSubscribers /
+            1000000
         )
             .toFixed(1)
-            .replace(".0", "") + "M+";
+            .replace(
+                ".0",
+                ""
+            ) + "M+";
 
     }
 
 
-    if (numericSubscribers >= 1000) {
+    if (
+        numericSubscribers >=
+        1000
+    ) {
 
         return (
-            numericSubscribers / 1000
+            numericSubscribers /
+            1000
         )
             .toFixed(1)
-            .replace(".0", "") + "K+";
+            .replace(
+                ".0",
+                ""
+            ) + "K+";
 
     }
 
@@ -679,9 +823,14 @@ function formatSubscribers(subscribers) {
 function escapeHTML(text) {
 
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
-    div.textContent = text;
+
+    div.textContent =
+        text;
+
 
     return div.innerHTML;
 
