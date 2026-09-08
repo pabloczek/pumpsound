@@ -1,55 +1,97 @@
+import { getCache } from "@vercel/functions";
+
 export default async function handler(req, res) {
     try {
-        const clientId = process.env.SOUNDCHARTS_CLIENT_ID;
-        const clientSecret = process.env.SOUNDCHARTS_CLIENT_SECRET;
-        const teamId = process.env.SOUNDCHARTS_TEAM_ID;
+        const cache = getCache();
 
-        if (!clientId || !clientSecret || !teamId) {
+        const CACHE_KEY = "pumpsound-spotify-stats";
+        const CACHE_TTL = 864000; // 10 dni
+
+        // Najpierw sprawdzamy trwały cache Vercela.
+        // Jeśli dane istnieją, NIE wykonujemy żadnego requestu do Soundcharts.
+        const cachedData = await cache.get(CACHE_KEY);
+
+        if (cachedData) {
+            res.setHeader(
+                "Cache-Control",
+                "s-maxage=864000, stale-while-revalidate=86400"
+            );
+
+            return res.status(200).json({
+                ...cachedData,
+                cached: true
+            });
+        }
+
+        const clientId =
+            process.env.SOUNDCHARTS_CLIENT_ID;
+
+        const clientSecret =
+            process.env.SOUNDCHARTS_CLIENT_SECRET;
+
+        const teamId =
+            process.env.SOUNDCHARTS_TEAM_ID;
+
+        if (
+            !clientId ||
+            !clientSecret ||
+            !teamId
+        ) {
             return res.status(500).json({
-                error: "Missing Soundcharts environment variables"
+                error:
+                    "Missing Soundcharts environment variables"
             });
         }
 
         const artists = {
             majki: {
                 name: "MAJKI",
-                uuid: "0424e04c-06fb-4f6c-a411-f8ba724c8326"
+                uuid:
+                    "0424e04c-06fb-4f6c-a411-f8ba724c8326"
             },
 
             cypis: {
                 name: "CYPIS",
-                uuid: "11e81bba-b4d4-96f2-bfd3-a0369fe50396"
+                uuid:
+                    "11e81bba-b4d4-96f2-bfd3-a0369fe50396"
             },
 
             sequento: {
                 name: "SEQUENTO",
-                uuid: "ceb62d1e-ebdf-4f11-ab3d-6798da0c23e5"
+                uuid:
+                    "ceb62d1e-ebdf-4f11-ab3d-6798da0c23e5"
             },
 
             bekaKsh: {
                 name: "BEKA KSH",
-                uuid: "11e83fec-7e3d-385a-a046-aa1c026db3d8"
+                uuid:
+                    "11e83fec-7e3d-385a-a046-aa1c026db3d8"
             },
 
             cheatz: {
                 name: "CHEATZ",
-                uuid: "790d3a0c-4283-11e9-a326-549f35141000"
+                uuid:
+                    "790d3a0c-4283-11e9-a326-549f35141000"
             },
 
             diho: {
                 name: "DIHO",
-                uuid: "11e81bba-e5d3-8e02-aa76-a0369fe50396"
+                uuid:
+                    "11e81bba-e5d3-8e02-aa76-a0369fe50396"
             },
 
             pumpsound: {
                 name: "PUMPSOUND",
-                uuid: "72795b33-2138-430d-9273-95528aaf2d88"
+                uuid:
+                    "72795b33-2138-430d-9273-95528aaf2d88"
             }
         };
 
         // Pobieramy Access Token
         const credentials = Buffer
-            .from(`${clientId}:${clientSecret}`)
+            .from(
+                `${clientId}:${clientSecret}`
+            )
             .toString("base64");
 
         const tokenResponse = await fetch(
@@ -58,7 +100,9 @@ export default async function handler(req, res) {
                 method: "POST",
 
                 headers: {
-                    "Authorization": `Basic ${credentials}`,
+                    "Authorization":
+                        `Basic ${credentials}`,
+
                     "Content-Type":
                         "application/x-www-form-urlencoded"
                 },
@@ -72,8 +116,12 @@ export default async function handler(req, res) {
             await tokenResponse.json();
 
         if (!tokenResponse.ok) {
-            return res.status(tokenResponse.status).json({
-                error: "Soundcharts authentication error",
+            return res.status(
+                tokenResponse.status
+            ).json({
+                error:
+                    "Soundcharts authentication error",
+
                 details: tokenData
             });
         }
@@ -83,27 +131,31 @@ export default async function handler(req, res) {
 
         if (!accessToken) {
             return res.status(500).json({
-                error: "Soundcharts did not return an access token"
+                error:
+                    "Soundcharts did not return an access token"
             });
         }
 
         // Pobieramy dane wszystkich artystów
         const results = {};
 
-        for (const [key, artist] of Object.entries(artists)) {
-
+        for (
+            const [key, artist]
+            of Object.entries(artists)
+        ) {
             try {
-                const response = await fetch(
-                    `https://customer.api.soundcharts.com/api/v2/artist/${artist.uuid}/streaming/spotify/listening?offset=0&limit=1&sort=desc`,
-                    {
-                        method: "GET",
+                const response =
+                    await fetch(
+                        `https://customer.api.soundcharts.com/api/v2/artist/${artist.uuid}/streaming/spotify/listening?offset=0&limit=1&sort=desc`,
+                        {
+                            method: "GET",
 
-                        headers: {
-                            "Authorization":
-                                `Bearer ${accessToken}`
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${accessToken}`
+                            }
                         }
-                    }
-                );
+                    );
 
                 const data =
                     await response.json();
@@ -123,15 +175,18 @@ export default async function handler(req, res) {
 
                 results[key] = {
                     name: artist.name,
+
                     monthlyListeners:
-                        Number(data.items[0].value) || 0,
+                        Number(
+                            data.items[0].value
+                        ) || 0,
 
                     date:
-                        data.items[0].date || null
+                        data.items[0].date ||
+                        null
                 };
 
             } catch (error) {
-
                 results[key] = {
                     name: artist.name,
                     monthlyListeners: null
@@ -139,16 +194,41 @@ export default async function handler(req, res) {
             }
         }
 
-        // Cache na 10 dni
+        const responseData = {
+            success: true,
+
+            updatedAt:
+                new Date().toISOString(),
+
+            artists: results
+        };
+
+        // Zapisujemy kompletne dane w Runtime Cache Vercela.
+        // TTL = 10 dni.
+        await cache.set(
+            CACHE_KEY,
+            responseData,
+            {
+                ttl: CACHE_TTL,
+
+                tags: [
+                    "pumpsound-spotify"
+                ],
+
+                name:
+                    "PUMPSOUND Spotify stats"
+            }
+        );
+
+        // Cache przeglądarki/CDN
         res.setHeader(
             "Cache-Control",
             "s-maxage=864000, stale-while-revalidate=86400"
         );
 
         return res.status(200).json({
-            success: true,
-            updatedAt: new Date().toISOString(),
-            artists: results
+            ...responseData,
+            cached: false
         });
 
     } catch (error) {
@@ -159,7 +239,9 @@ export default async function handler(req, res) {
         );
 
         return res.status(500).json({
-            error: "Server error",
+            error:
+                "Server error",
+
             message:
                 error?.message ||
                 "Unknown error"
