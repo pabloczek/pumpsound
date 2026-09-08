@@ -87,6 +87,11 @@ const translations = {
 
 let currentLanguage = getInitialLanguage();
 
+let collaborationStatsData = {
+    spotify: {},
+    youtube: {}
+};
+
 
 function getInitialLanguage() {
 
@@ -180,6 +185,9 @@ function applyLanguage(language, animate = false) {
                     : "MONTHLY SPOTIFY LISTENERS";
 
         });
+
+
+    updateCollaborationStatsLanguage();
 
 
     const languageSwitcher =
@@ -324,59 +332,11 @@ async function loadSpotifyData() {
         }
 
 
-        document
-            .querySelectorAll(
-                ".collaboration[data-artist-key]"
-            )
-            .forEach((collaboration) => {
-
-                const artistKey =
-                    collaboration.dataset.artistKey;
-
-                const artist =
-                    data.artists[
-                        artistKey
-                    ];
-
-                if (
-                    !artist ||
-                    artist.monthlyListeners === null ||
-                    artist.monthlyListeners === undefined
-                ) {
-                    return;
-                }
+        collaborationStatsData.spotify =
+            data.artists;
 
 
-                const overlay =
-                    collaboration.querySelector(
-                        ".collaboration-overlay span"
-                    );
-
-
-                if (!overlay) {
-                    return;
-                }
-
-
-                overlay.innerHTML = `
-                    <span class="collaboration-stat-value">
-                        ${formatListeners(
-                            artist.monthlyListeners
-                        )}
-                    </span>
-                    <span class="collaboration-stat-label">
-                        ${currentLanguage === "pl"
-                            ? "MIESIĘCZNYCH SŁUCHACZY SPOTIFY"
-                            : "MONTHLY SPOTIFY LISTENERS"
-                        }
-                    </span>
-                `;
-
-                overlay.classList.add(
-                    "collaboration-stats"
-                );
-
-            });
+        renderCollaborationStats();
 
 
     } catch (error) {
@@ -387,6 +347,139 @@ async function loadSpotifyData() {
         );
 
     }
+
+}
+
+
+function renderCollaborationStats() {
+
+    document
+        .querySelectorAll(
+            ".collaboration[data-artist-key]"
+        )
+        .forEach((collaboration) => {
+
+            const artistKey =
+                collaboration.dataset.artistKey;
+
+            const spotifyArtist =
+                collaborationStatsData.spotify[
+                    artistKey
+                ];
+
+            const youtubeArtist =
+                collaborationStatsData.youtube[
+                    artistKey
+                ];
+
+
+            const overlay =
+                collaboration.querySelector(
+                    ".collaboration-overlay span"
+                );
+
+
+            if (!overlay) {
+                return;
+            }
+
+
+            const hasSpotify =
+                spotifyArtist &&
+                spotifyArtist.monthlyListeners !== null &&
+                spotifyArtist.monthlyListeners !== undefined;
+
+
+            const hasYoutube =
+                youtubeArtist &&
+                (
+                    youtubeArtist.subscribers !== null ||
+                    youtubeArtist.views !== null
+                );
+
+
+            if (!hasSpotify && !hasYoutube) {
+                return;
+            }
+
+
+            const youtubeSubscribers =
+                youtubeArtist?.subscribers !== null &&
+                youtubeArtist?.subscribers !== undefined
+                    ? formatSubscribers(
+                        youtubeArtist.subscribers
+                    )
+                    : "—";
+
+
+            const youtubeViews =
+                youtubeArtist?.views !== null &&
+                youtubeArtist?.views !== undefined
+                    ? formatViews(
+                        youtubeArtist.views
+                    )
+                    : "—";
+
+
+            const spotifyListeners =
+                hasSpotify
+                    ? formatListeners(
+                        spotifyArtist.monthlyListeners
+                    )
+                    : "—";
+
+
+            overlay.innerHTML = `
+                <span class="collaboration-stat-item">
+                    <span class="collaboration-stat-value">
+                        ${youtubeSubscribers}
+                    </span>
+                    <span class="collaboration-stat-label">
+                        ${currentLanguage === "pl"
+                            ? "SUBSKRYPCJI YOUTUBE"
+                            : "YOUTUBE SUBSCRIBERS"
+                        }
+                    </span>
+                </span>
+
+                <span class="collaboration-stat-item">
+                    <span class="collaboration-stat-value">
+                        ${youtubeViews}
+                    </span>
+                    <span class="collaboration-stat-label">
+                        ${currentLanguage === "pl"
+                            ? "WYŚWIETLEŃ YOUTUBE"
+                            : "YOUTUBE VIEWS"
+                        }
+                    </span>
+                </span>
+
+                <span class="collaboration-stat-item">
+                    <span class="collaboration-stat-value">
+                        ${spotifyListeners}
+                    </span>
+                    <span class="collaboration-stat-label">
+                        ${currentLanguage === "pl"
+                            ? "MIESIĘCZNYCH SŁUCHACZY SPOTIFY"
+                            : "MONTHLY SPOTIFY LISTENERS"
+                        }
+                    </span>
+                </span>
+            `;
+
+
+            overlay.classList.add(
+                "collaboration-stats"
+            );
+
+        });
+
+}
+
+
+function updateCollaborationStatsLanguage() {
+
+    renderCollaborationStats();
 
 }
 
@@ -485,37 +578,50 @@ function setupCollaborationStatsStyles() {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 7px;
             line-height: 1;
             text-align: center;
         }
 
         .collaboration-overlay
+        .collaboration-stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .collaboration-overlay
         .collaboration-stat-value {
-            font-size: 24px;
+            font-size: 16px;
             font-weight: 600;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
         }
 
         .collaboration-overlay
         .collaboration-stat-label {
-            font-size: 6px;
+            font-size: 5px;
             font-weight: 400;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
             opacity: 0.65;
             white-space: nowrap;
         }
 
         @media (max-width: 768px) {
+            .collaboration-overlay span.collaboration-stats {
+                gap: 5px;
+            }
+
             .collaboration-overlay
             .collaboration-stat-value {
-                font-size: 20px;
+                font-size: 13px;
             }
 
             .collaboration-overlay
             .collaboration-stat-label {
-                font-size: 5px;
-                letter-spacing: 1.2px;
+                font-size: 4px;
+                letter-spacing: 1px;
             }
         }
     `;
@@ -549,6 +655,17 @@ async function loadYouTubeData() {
 
         const data =
             await response.json();
+
+
+        if (
+            data.artists &&
+            typeof data.artists === "object"
+        ) {
+            collaborationStatsData.youtube =
+                data.artists;
+
+            renderCollaborationStats();
+        }
 
 
         if (data.views !== undefined) {
