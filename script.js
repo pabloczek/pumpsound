@@ -1195,7 +1195,7 @@ function formatSubscribers(subscribers) {
             .replace(
                 ".0",
                 ""
-            ) + "M+";
+            ) + "M";
 
     }
 
@@ -1213,7 +1213,7 @@ function formatSubscribers(subscribers) {
             .replace(
                 ".0",
                 ""
-            ) + "K+";
+            ) + "K";
 
     }
 

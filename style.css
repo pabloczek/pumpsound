@@ -1069,45 +1069,38 @@ nav a:hover {
 
 .collaborations {
     max-width: 1450px;
-
     margin: 110px auto 0;
 }
 
 .collaborations-heading {
     display: flex;
-
     justify-content: space-between;
     align-items: center;
-
     padding-bottom: 20px;
-
     border-bottom: 1px solid rgba(255,255,255,0.18);
-
     font-size: 9px;
-
     letter-spacing: 3px;
-
     color: rgba(255,255,255,0.45);
 }
 
 .collaboration-grid {
     display: grid;
-
-    grid-template-columns: repeat(6, 1fr);
-
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 2.8vw;
-
     align-items: start;
-
     padding-top: 55px;
 }
 
 .collaboration {
     display: block;
-
+    position: relative;
     color: white;
-
     text-decoration: none;
+    transform: translateY(0);
+    transition:
+        transform 0.7s cubic-bezier(.16,1,.3,1),
+        filter 0.5s ease;
+    will-change: transform;
 }
 
 .collaboration:nth-child(2),
@@ -1115,118 +1108,220 @@ nav a:hover {
     transform: translateY(45px);
 }
 
+.collaboration:hover {
+    transform: translateY(-9px);
+}
+
+.collaboration:nth-child(2):hover,
+.collaboration:nth-child(5):hover {
+    transform: translateY(36px);
+}
+
 .collaboration-image {
     position: relative;
-
     width: 100%;
-
-    aspect-ratio: 1 / 1;
-
+    aspect-ratio: 4 / 5;
     overflow: hidden;
-
-    border-radius: 50%;
-
+    border-radius: 10px;
     background: #111;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 14px 35px rgba(0,0,0,0.18);
+    transition:
+        border-radius 0.5s ease,
+        box-shadow 0.7s cubic-bezier(.16,1,.3,1),
+        transform 0.7s cubic-bezier(.16,1,.3,1);
 }
 
 .collaboration-image img {
     display: block;
-
     width: 100%;
     height: 100%;
-
     object-fit: cover;
-
+    transform: scale(1.001);
     transition:
-        transform 0.8s cubic-bezier(.16,1,.3,1);
+        transform 1s cubic-bezier(.16,1,.3,1),
+        filter 0.7s ease;
+    will-change: transform;
+}
+
+.collaboration:hover .collaboration-image {
+    border-radius: 14px;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.16),
+        0 24px 55px rgba(0,0,0,0.38);
+}
+
+.collaboration:hover .collaboration-image img {
+    transform: scale(1.055);
+    filter: brightness(0.78);
 }
 
 .collaboration-overlay {
     position: absolute;
     z-index: 4;
     inset: 0;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
-    border-radius: 50%;
-
-    background: rgba(0,0,0,0.2);
-
+    border-radius: inherit;
+    padding: 18px;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.04) 0%,
+            rgba(0,0,0,0.72) 100%
+        );
     opacity: 0;
-
     transition:
-        opacity 0.4s ease,
-        background 0.4s ease;
-}
-
-.collaboration-overlay span {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    width: 45px;
-    height: 45px;
-
-    border: 1px solid rgba(255,255,255,0.5);
-
-    border-radius: 50%;
-
-    font-size: 16px;
-
-    transform: translateY(10px);
-
-    transition: transform 0.5s cubic-bezier(.16,1,.3,1);
-}
-
-.collaboration:hover .collaboration-image img {
-    transform: scale(1.08);
+        opacity 0.5s ease,
+        background 0.5s ease;
 }
 
 .collaboration:hover .collaboration-overlay {
     opacity: 1;
-
-    background: rgba(0,0,0,0.08);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.02) 0%,
+            rgba(0,0,0,0.78) 100%
+        );
 }
 
-.collaboration:hover .collaboration-overlay span {
+.collaboration-overlay > span {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    border: 0;
+    border-radius: 0;
+    transform: translateY(12px);
+    transition:
+        transform 0.65s cubic-bezier(.16,1,.3,1);
+}
+
+.collaboration:hover .collaboration-overlay > span {
     transform: translateY(0);
+}
+
+.collaboration-overlay
+.collaboration-stat-item {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 5px 7px;
+    text-align: center;
+}
+
+.collaboration-overlay
+.collaboration-stat-item + .collaboration-stat-item {
+    border-left: 1px solid rgba(255,255,255,0.22);
+}
+
+.collaboration-overlay
+.collaboration-stat-value {
+    font-size: clamp(13px, 1.15vw, 18px);
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    color: #fff;
+}
+
+.collaboration-overlay
+.collaboration-stat-label {
+    max-width: 100%;
+    font-size: 5px;
+    line-height: 1.25;
+    font-weight: 400;
+    letter-spacing: 1.05px;
+    text-align: center;
+    opacity: 0.58;
+    white-space: normal;
+    color: rgba(255,255,255,0.9);
 }
 
 .collaboration-info {
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     margin-top: 18px;
-
     padding-bottom: 14px;
-
     border-bottom: 1px solid rgba(255,255,255,0.12);
+    transition:
+        border-color 0.4s ease,
+        transform 0.55s cubic-bezier(.16,1,.3,1);
+}
+
+.collaboration:hover .collaboration-info {
+    border-bottom-color: rgba(255,255,255,0.25);
+    transform: translateY(2px);
 }
 
 .collaboration-info span {
     font-size: 8px;
-
     letter-spacing: 2px;
-
     color: rgba(255,255,255,0.3);
 }
 
 .collaboration-info strong {
     font-size: 9px;
-
     letter-spacing: 2px;
-
     font-weight: 500;
-
     color: rgba(255,255,255,0.8);
 }
 
+/* Gentle floating motion — only when the user is not hovering */
+@keyframes collaborationFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+.collaboration:nth-child(2) .collaboration-image,
+.collaboration:nth-child(5) .collaboration-image {
+    animation: collaborationFloat 5.5s ease-in-out infinite;
+}
+
+.collaboration:nth-child(2) .collaboration-image {
+    animation-delay: -1.2s;
+}
+
+.collaboration:nth-child(5) .collaboration-image {
+    animation-delay: -3.1s;
+}
+
+.collaboration:hover .collaboration-image {
+    animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .collaboration,
+    .collaboration:nth-child(2),
+    .collaboration:nth-child(5),
+    .collaboration-image {
+        animation: none;
+        transition: none;
+    }
+
+    .collaboration-image,
+    .collaboration-image img,
+    .collaboration-overlay,
+    .collaboration-overlay > span,
+    .collaboration-info {
+        transition: none;
+    }
+}
 
 /* STATS */
 
@@ -1414,13 +1509,36 @@ footer {
 
     .collaboration-grid {
         grid-template-columns: repeat(3, 1fr);
-
         gap: 45px 25px;
     }
 
     .collaboration:nth-child(2),
     .collaboration:nth-child(5) {
         transform: translateY(25px);
+    }
+
+    .collaboration:hover {
+        transform: translateY(-7px);
+    }
+
+    .collaboration:nth-child(2):hover,
+    .collaboration:nth-child(5):hover {
+        transform: translateY(18px);
+    }
+
+    .collaboration-overlay {
+        padding: 14px;
+    }
+
+    .collaboration-overlay
+    .collaboration-stat-value {
+        font-size: 13px;
+    }
+
+    .collaboration-overlay
+    .collaboration-stat-label {
+        font-size: 4px;
+        letter-spacing: 0.8px;
     }
 
     .about-stats {
@@ -1639,15 +1757,43 @@ footer {
 
     .collaboration-grid {
         grid-template-columns: repeat(2, 1fr);
-
         gap: 45px 25px;
-
         padding-top: 40px;
     }
 
     .collaboration:nth-child(2),
     .collaboration:nth-child(5) {
         transform: translateY(25px);
+    }
+
+    .collaboration:hover {
+        transform: translateY(-6px);
+    }
+
+    .collaboration:nth-child(2):hover,
+    .collaboration:nth-child(5):hover {
+        transform: translateY(19px);
+    }
+
+    .collaboration-overlay {
+        padding: 10px;
+    }
+
+    .collaboration-overlay
+    .collaboration-stat-item {
+        gap: 4px;
+        padding: 4px 3px;
+    }
+
+    .collaboration-overlay
+    .collaboration-stat-value {
+        font-size: 10px;
+    }
+
+    .collaboration-overlay
+    .collaboration-stat-label {
+        font-size: 3px;
+        letter-spacing: 0.55px;
     }
 
     .collaboration-info {
