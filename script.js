@@ -432,6 +432,18 @@ function renderCollaborationStats() {
             overlay.innerHTML = `
                 <span class="collaboration-stat-item">
                     <span class="collaboration-stat-value">
+                        ${spotifyListeners}
+                    </span>
+                    <span class="collaboration-stat-label">
+                        ${currentLanguage === "pl"
+                            ? "MIESIĘCZNYCH SŁUCHACZY SPOTIFY"
+                            : "MONTHLY SPOTIFY LISTENERS"
+                        }
+                    </span>
+                </span>
+
+                <span class="collaboration-stat-item">
+                    <span class="collaboration-stat-value">
                         ${youtubeSubscribers}
                     </span>
                     <span class="collaboration-stat-label">
@@ -450,18 +462,6 @@ function renderCollaborationStats() {
                         ${currentLanguage === "pl"
                             ? "WYŚWIETLEŃ YOUTUBE"
                             : "YOUTUBE VIEWS"
-                        }
-                    </span>
-                </span>
-
-                <span class="collaboration-stat-item">
-                    <span class="collaboration-stat-value">
-                        ${spotifyListeners}
-                    </span>
-                    <span class="collaboration-stat-label">
-                        ${currentLanguage === "pl"
-                            ? "MIESIĘCZNYCH SŁUCHACZY SPOTIFY"
-                            : "MONTHLY SPOTIFY LISTENERS"
                         }
                     </span>
                 </span>

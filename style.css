@@ -908,7 +908,6 @@ nav a:hover {
     border-radius: 50%;
 
     border: 1px solid transparent;
-
     border-top-color: white;
 
     transform: rotate(-45deg);
@@ -1086,7 +1085,7 @@ nav a:hover {
 .collaboration-grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 2.8vw;
+    gap: 1.8vw;
     align-items: start;
     padding-top: 55px;
 }
@@ -1103,18 +1102,8 @@ nav a:hover {
     will-change: transform;
 }
 
-.collaboration:nth-child(2),
-.collaboration:nth-child(5) {
-    transform: translateY(45px);
-}
-
 .collaboration:hover {
     transform: translateY(-9px);
-}
-
-.collaboration:nth-child(2):hover,
-.collaboration:nth-child(5):hover {
-    transform: translateY(36px);
 }
 
 .collaboration-image {
@@ -1125,7 +1114,6 @@ nav a:hover {
     border-radius: 10px;
     background: #111;
     box-shadow:
-        0 0 0 1px rgba(255,255,255,0.08),
         0 14px 35px rgba(0,0,0,0.18);
     transition:
         border-radius 0.5s ease,
@@ -1148,7 +1136,6 @@ nav a:hover {
 .collaboration:hover .collaboration-image {
     border-radius: 14px;
     box-shadow:
-        0 0 0 1px rgba(255,255,255,0.16),
         0 24px 55px rgba(0,0,0,0.38);
 }
 
@@ -1221,11 +1208,6 @@ nav a:hover {
 }
 
 .collaboration-overlay
-.collaboration-stat-item + .collaboration-stat-item {
-    border-left: 1px solid rgba(255,255,255,0.22);
-}
-
-.collaboration-overlay
 .collaboration-stat-value {
     font-size: clamp(13px, 1.15vw, 18px);
     line-height: 1;
@@ -1278,50 +1260,6 @@ nav a:hover {
     color: rgba(255,255,255,0.8);
 }
 
-/* Gentle floating motion — only when the user is not hovering */
-@keyframes collaborationFloat {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-4px);
-    }
-}
-
-.collaboration:nth-child(2) .collaboration-image,
-.collaboration:nth-child(5) .collaboration-image {
-    animation: collaborationFloat 5.5s ease-in-out infinite;
-}
-
-.collaboration:nth-child(2) .collaboration-image {
-    animation-delay: -1.2s;
-}
-
-.collaboration:nth-child(5) .collaboration-image {
-    animation-delay: -3.1s;
-}
-
-.collaboration:hover .collaboration-image {
-    animation: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .collaboration,
-    .collaboration:nth-child(2),
-    .collaboration:nth-child(5),
-    .collaboration-image {
-        animation: none;
-        transition: none;
-    }
-
-    .collaboration-image,
-    .collaboration-image img,
-    .collaboration-overlay,
-    .collaboration-overlay > span,
-    .collaboration-info {
-        transition: none;
-    }
-}
 
 /* STATS */
 
@@ -1512,18 +1450,8 @@ footer {
         gap: 45px 25px;
     }
 
-    .collaboration:nth-child(2),
-    .collaboration:nth-child(5) {
-        transform: translateY(25px);
-    }
-
     .collaboration:hover {
         transform: translateY(-7px);
-    }
-
-    .collaboration:nth-child(2):hover,
-    .collaboration:nth-child(5):hover {
-        transform: translateY(18px);
     }
 
     .collaboration-overlay {
@@ -1761,18 +1689,8 @@ footer {
         padding-top: 40px;
     }
 
-    .collaboration:nth-child(2),
-    .collaboration:nth-child(5) {
-        transform: translateY(25px);
-    }
-
     .collaboration:hover {
         transform: translateY(-6px);
-    }
-
-    .collaboration:nth-child(2):hover,
-    .collaboration:nth-child(5):hover {
-        transform: translateY(19px);
     }
 
     .collaboration-overlay {
