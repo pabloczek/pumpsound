@@ -279,9 +279,9 @@ function setupCollaborationStats() {
         "majki",
         "cypis",
         "sequento",
-        "bekaKsh",
+        "diho",
         "cheatz",
-        "diho"
+        "bekaKsh"
     ];
 
     collaborations.forEach((collaboration, index) => {
@@ -334,6 +334,28 @@ async function loadSpotifyData() {
 
         collaborationStatsData.spotify =
             data.artists;
+
+
+        const pumpsoundListeners =
+            data.artists.pumpsound?.monthlyListeners;
+
+
+        const spotifyListenersElement =
+            document.querySelector(
+                "#spotify-listeners"
+            );
+
+
+        if (
+            spotifyListenersElement &&
+            pumpsoundListeners !== null &&
+            pumpsoundListeners !== undefined
+        ) {
+            spotifyListenersElement.textContent =
+                formatListeners(
+                    pumpsoundListeners
+                );
+        }
 
 
         renderCollaborationStats();
@@ -594,18 +616,20 @@ function setupCollaborationStatsStyles() {
 
         .collaboration-overlay
         .collaboration-stat-value {
-            font-size: 16px;
+            font-size: clamp(18px, 1.55vw, 25px);
             font-weight: 600;
             letter-spacing: -0.3px;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.45);
         }
 
         .collaboration-overlay
         .collaboration-stat-label {
-            font-size: 5px;
+            font-size: 6px;
             font-weight: 400;
             letter-spacing: 1.2px;
-            opacity: 0.65;
+            opacity: 0.8;
             white-space: nowrap;
+            text-shadow: 0 1px 8px rgba(0,0,0,0.45);
         }
 
         @media (max-width: 768px) {
@@ -615,12 +639,12 @@ function setupCollaborationStatsStyles() {
 
             .collaboration-overlay
             .collaboration-stat-value {
-                font-size: 13px;
+                font-size: 14px;
             }
 
             .collaboration-overlay
             .collaboration-stat-label {
-                font-size: 4px;
+                font-size: 4.5px;
                 letter-spacing: 1px;
             }
         }
@@ -680,8 +704,7 @@ async function loadYouTubeData() {
 
                 viewsElement.textContent =
                     formatViews(
-                        data.views,
-                        true
+                        data.views
                     );
 
             }
