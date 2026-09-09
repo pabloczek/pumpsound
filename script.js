@@ -33,7 +33,7 @@ const translations = {
         "stats.views": "TOTAL YOUTUBE VIEWS",
         "stats.subscribers": "YOUTUBE SUBSCRIBERS",
         "stats.spotify": "MONTHLY SPOTIFY LISTENERS",
-        "stats.reach": "AUDIENCE & REACH",
+        "stats.videos": "YOUTUBE VIDEOS",
 
         "contact.heading": "LET'S WORK<br>TOGETHER.",
 
@@ -75,7 +75,7 @@ const translations = {
         "stats.views": "ŁĄCZNE WYŚWIETLENIA YOUTUBE",
         "stats.subscribers": "SUBSKRYPCJE YOUTUBE",
         "stats.spotify": "MIESIĘCZNYCH SŁUCHACZY SPOTIFY",
-        "stats.reach": "ODBIORCY I ZASIĘG",
+        "stats.videos": "FILMY NA YOUTUBE",
 
         "contact.heading": "DZIAŁAJMY<br>RAZEM.",
 
@@ -91,6 +91,36 @@ let collaborationStatsData = {
     spotify: {},
     youtube: {}
 };
+
+
+const aboutStatsData = {
+    youtubeViews: {
+        selector: "#youtube-views",
+        formatter: formatViews,
+        value: null
+    },
+    youtubeSubscribers: {
+        selector: "#youtube-subscribers",
+        formatter: formatSubscribers,
+        value: null
+    },
+    spotifyListeners: {
+        selector: "#spotify-listeners",
+        formatter: formatListeners,
+        value: null
+    },
+    youtubeVideos: {
+        selector: "#youtube-videos",
+        formatter: formatViews,
+        value: null
+    }
+};
+
+let aboutStatsVisible = false;
+
+const animatedAboutStats = new Set();
+
+const ABOUT_STATS_ANIMATION_DURATION = 2200;
 
 
 function getInitialLanguage() {
@@ -109,6 +139,172 @@ function getInitialLanguage() {
     return navigator.language?.toLowerCase().startsWith("pl")
         ? "pl"
         : "en";
+}
+
+
+function setupAboutStatsAnimation() {
+
+    const aboutStats =
+        document.querySelector(
+            ".about-stats"
+        );
+
+
+    if (!aboutStats) {
+        return;
+    }
+
+
+    const revealAboutStats = () => {
+
+        aboutStatsVisible = true;
+
+        Object.keys(aboutStatsData).forEach(
+            animateAboutStat
+        );
+
+    };
+
+
+    if (!("IntersectionObserver" in window)) {
+
+        revealAboutStats();
+
+        return;
+    }
+
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+
+            if (!entries[0].isIntersecting) {
+                return;
+            }
+
+
+            observer.disconnect();
+
+            revealAboutStats();
+
+        },
+        {
+            threshold: 0.2
+        }
+    );
+
+
+    observer.observe(
+        aboutStats
+    );
+
+}
+
+
+function setAboutStatValue(key, value) {
+
+    const stat = aboutStatsData[key];
+
+    const numericValue = Number(value);
+
+
+    if (
+        !stat ||
+        !Number.isFinite(numericValue)
+    ) {
+        return;
+    }
+
+
+    stat.value = numericValue;
+
+
+    if (aboutStatsVisible) {
+        animateAboutStat(key);
+    }
+
+}
+
+
+function animateAboutStat(key) {
+
+    const stat = aboutStatsData[key];
+
+
+    if (
+        !stat ||
+        stat.value === null ||
+        animatedAboutStats.has(key)
+    ) {
+        return;
+    }
+
+
+    const element =
+        document.querySelector(
+            stat.selector
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    animatedAboutStats.add(key);
+
+
+    const renderValue = (value) => {
+
+        element.textContent =
+            stat.formatter(value);
+
+    };
+
+
+    if (
+        window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches
+    ) {
+        renderValue(stat.value);
+
+        return;
+    }
+
+
+    const startTime = performance.now();
+
+
+    const update = (currentTime) => {
+
+        const progress = Math.min(
+            (currentTime - startTime) /
+                ABOUT_STATS_ANIMATION_DURATION,
+            1
+        );
+
+        const easedProgress =
+            1 - Math.pow(1 - progress, 4);
+
+
+        renderValue(
+            Math.round(
+                stat.value * easedProgress
+            )
+        );
+
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+
+    };
+
+
+    renderValue(0);
+
+    requestAnimationFrame(update);
+
 }
 
 
@@ -340,21 +536,14 @@ async function loadSpotifyData() {
             data.artists.pumpsound?.monthlyListeners;
 
 
-        const spotifyListenersElement =
-            document.querySelector(
-                "#spotify-listeners"
-            );
-
-
         if (
-            spotifyListenersElement &&
             pumpsoundListeners !== null &&
             pumpsoundListeners !== undefined
         ) {
-            spotifyListenersElement.textContent =
-                formatListeners(
-                    pumpsoundListeners
-                );
+            setAboutStatValue(
+                "spotifyListeners",
+                pumpsoundListeners
+            );
         }
 
 
@@ -694,40 +883,30 @@ async function loadYouTubeData() {
 
         if (data.views !== undefined) {
 
-            const viewsElement =
-                document.querySelector(
-                    "#youtube-views"
-                );
-
-
-            if (viewsElement) {
-
-                viewsElement.textContent =
-                    formatViews(
-                        data.views
-                    );
-
-            }
+            setAboutStatValue(
+                "youtubeViews",
+                data.views
+            );
 
         }
 
 
         if (data.subscribers !== undefined) {
 
-            const subscribersElement =
-                document.querySelector(
-                    "#youtube-subscribers"
-                );
+            setAboutStatValue(
+                "youtubeSubscribers",
+                data.subscribers
+            );
+
+        }
 
 
-            if (subscribersElement) {
+        if (data.videoCount !== undefined) {
 
-                subscribersElement.textContent =
-                    formatSubscribers(
-                        data.subscribers
-                    );
-
-            }
+            setAboutStatValue(
+                "youtubeVideos",
+                data.videoCount
+            );
 
         }
 
@@ -1268,5 +1447,6 @@ function escapeHTML(text) {
 setupLanguageSwitcher();
 setupCollaborationStats();
 setupCollaborationStatsStyles();
+setupAboutStatsAnimation();
 loadYouTubeData();
 loadSpotifyData();

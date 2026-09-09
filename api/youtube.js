@@ -55,6 +55,10 @@ export default async function handler(req, res) {
             channel.statistics?.subscriberCount || 0
         );
 
+        const videoCount = Number(
+            channel.statistics?.videoCount || 0
+        );
+
         // 2. Pobieramy statystyki wszystkich współpracujących artystów
         // Jeden request zamiast osobnego requestu dla każdego kanału.
         const artistChannelIds = Object.values(artistChannels).join(",");
@@ -145,6 +149,7 @@ export default async function handler(req, res) {
             return res.status(200).json({
                 views,
                 subscribers,
+                videoCount,
                 artists,
                 videos: [],
                 updatedAt: new Date().toISOString()
@@ -165,6 +170,7 @@ export default async function handler(req, res) {
             return res.status(200).json({
                 views,
                 subscribers,
+                videoCount,
                 artists,
                 videos: [],
                 updatedAt: new Date().toISOString()
@@ -242,6 +248,7 @@ export default async function handler(req, res) {
         return res.status(200).json({
             views,
             subscribers,
+            videoCount,
             artists,
             videos,
             updatedAt: new Date().toISOString()

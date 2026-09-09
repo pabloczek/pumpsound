@@ -4,6 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+
+    <script>
+        (() => {
+            let language;
+
+            try {
+                const savedLanguage = localStorage.getItem("pumpsound-language");
+
+                language = savedLanguage === "pl" || savedLanguage === "en"
+                    ? savedLanguage
+                    : navigator.language?.toLowerCase().startsWith("pl")
+                        ? "pl"
+                        : "en";
+            } catch {
+                language = navigator.language?.toLowerCase().startsWith("pl")
+                    ? "pl"
+                    : "en";
+            }
+
+            document.documentElement.lang = language;
+        })();
+    </script>
 
     <title>PUMPSOUND</title>
 
@@ -17,7 +40,10 @@
     <header>
 
         <div class="logo">
-            PUMPSOUND
+            <img
+                src="images/logo.png"
+                alt="PUMPSOUND"
+            >
         </div>
 
         <div class="header-right">
@@ -44,22 +70,21 @@
 
     <section class="hero">
 
-        <div class="hero-small">
-            <span data-i18n="hero.kicker">MUSIC PRODUCER FROM POLAND</span>
-        </div>
+        <video class="hero-video" autoplay muted loop playsinline aria-hidden="true">
+            <source src="videos/video1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-video-overlay" aria-hidden="true"></div>
 
         <h1>
-            PUMPSOUND
+            <img
+                src="images/logo.png"
+                alt="PUMPSOUND"
+            >
         </h1>
 
         <div class="hero-subtitle">
-            <span data-i18n="hero.subtitle">POLISH SOUND. GLOBAL REACH.</span>
+            <span data-i18n="hero.kicker">MUSIC PRODUCER FROM POLAND</span>
         </div>
-
-        <a href="#music" class="hero-button">
-            <span data-i18n="hero.listen">LISTEN</span>
-            <span class="arrow">↗</span>
-        </a>
 
         <a href="#music" class="hero-scroll" aria-label="Scroll to explore" data-i18n-aria="hero.scrollAria">
             <span data-i18n="hero.scroll">SCROLL TO EXPLORE</span>
@@ -491,12 +516,15 @@
 
             <div class="about-stat">
 
-                <div class="about-stat-number">
-                    WORLDWIDE
+                <div
+                    class="about-stat-number"
+                    id="youtube-videos"
+                >
+                    —
                 </div>
 
                 <div class="about-stat-label">
-                    <span data-i18n="stats.reach">AUDIENCE & REACH</span>
+                    <span data-i18n="stats.videos">YOUTUBE VIDEOS</span>
                 </div>
 
             </div>
