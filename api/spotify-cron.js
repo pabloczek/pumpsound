@@ -6,8 +6,8 @@ import {
 
 export default async function handler(req, res) {
 
-    if (req.method !== "POST") {
-        res.setHeader("Allow", "POST");
+    if (req.method !== "GET") {
+        res.setHeader("Allow", "GET");
 
         return res.status(405).json({
             error: "Method not allowed"
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     if (
         !hasValidBearerAuthorization(
             req,
-            process.env.SPOTIFY_REFRESH_SECRET
+            process.env.CRON_SECRET
         )
     ) {
         return res.status(401).json({
@@ -26,10 +26,11 @@ export default async function handler(req, res) {
     }
 
     const result = await refreshSpotifySnapshot({
-        force: true
+        force: false
     });
 
     res.setHeader("Cache-Control", "no-store");
 
     return res.status(result.status).json(result.body);
+
 }
