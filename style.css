@@ -295,6 +295,7 @@ nav a:hover {
 .hero-small,
 .hero h1,
 .hero-subtitle,
+.hero-socials,
 .hero-button,
 .hero-scroll {
     z-index: 2;
@@ -310,25 +311,85 @@ nav a:hover {
 }
 
 .hero h1 {
+    position: relative;
     width: min(82vw, 1000px);
     line-height: 0;
 
     animation: heroReveal 1.4s cubic-bezier(.16,1,.3,1);
 }
 
+.hero h1::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+    opacity: 0;
+    background: white;
+    -webkit-mask: url("images/logo.png") center / contain no-repeat;
+    mask: url("images/logo.png") center / contain no-repeat;
+}
+
 .hero h1 img {
     display: block;
     width: 100%;
     height: auto;
+
+    transition:
+        transform 0.36s cubic-bezier(.16,1,.3,1),
+        filter 0.36s cubic-bezier(.16,1,.3,1);
 }
 
 .hero-subtitle {
+    position: relative;
+    top: 10px;
+
     margin-top: 50px;
 
     font-size: 9px;
     letter-spacing: 7px;
 
     color: rgba(255,255,255,0.42);
+}
+
+.hero-socials {
+    position: relative;
+    top: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 20px;
+
+    margin-top: 22px;
+}
+
+.hero-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: rgba(255,255,255,0.62);
+    text-decoration: none;
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s cubic-bezier(.16,1,.3,1);
+}
+
+.hero-social-link svg {
+    display: block;
+    width: 21px;
+    height: 21px;
+    fill: currentColor;
+}
+
+.hero-social-link:hover,
+.hero-social-link:focus-visible {
+    color: rgba(255,255,255,1);
+    transform: translateY(-2px) scale(1.06);
 }
 
 
@@ -1579,6 +1640,17 @@ footer {
         width: 86vw;
     }
 
+    .hero-socials {
+        top: 22px;
+        gap: 17px;
+        margin-top: 20px;
+    }
+
+    .hero-social-link svg {
+        width: 19px;
+        height: 19px;
+    }
+
 
     .release,
     .visuals,
@@ -1796,6 +1868,64 @@ footer {
 
     footer {
         padding: 25px 22px;
+    }
+
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+    .hero h1:hover img {
+        transform: scale(1.02);
+        filter:
+            drop-shadow(0 0 8px rgba(255,255,255,0.22))
+            drop-shadow(0 0 18px rgba(255,255,255,0.1));
+    }
+
+    .hero h1:hover::after {
+        animation: heroLogoHoverGlitch 140ms steps(2, end);
+    }
+
+}
+
+@keyframes heroLogoHoverGlitch {
+
+    0% {
+        opacity: 0;
+        transform: translateX(0);
+        clip-path: inset(34% 0 46% 0);
+    }
+
+    35% {
+        opacity: 0.28;
+        transform: translateX(2px);
+        clip-path: inset(34% 0 46% 0);
+    }
+
+    70% {
+        opacity: 0.16;
+        transform: translateX(-1px);
+        clip-path: inset(57% 0 24% 0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(0);
+        clip-path: inset(57% 0 24% 0);
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .hero h1::after {
+        display: none;
+    }
+
+    .hero h1 img,
+    .hero h1:hover img {
+        transform: none;
+        filter: none;
+        transition: none;
     }
 
 }

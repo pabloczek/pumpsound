@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@upstash/redis": "^1.38.4",
     "@vercel/functions": "^3.9.5"
   }
 }

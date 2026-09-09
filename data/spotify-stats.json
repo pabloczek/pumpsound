@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "updatedAt": null,
+  "artists": {
+    "majki": {
+      "name": "MAJKI",
+      "monthlyListeners": null
+    },
+    "cypis": {
+      "name": "CYPIS",
+      "monthlyListeners": null
+    },
+    "sequento": {
+      "name": "SEQUENTO",
+      "monthlyListeners": null
+    },
+    "bekaKsh": {
+      "name": "BEKA KSH",
+      "monthlyListeners": null
+    },
+    "cheatz": {
+      "name": "CHEATZ",
+      "monthlyListeners": null
+    },
+    "diho": {
+      "name": "DIHO",
+      "monthlyListeners": null
+    },
+    "pumpsound": {
+      "name": "PUMPSOUND",
+      "monthlyListeners": null
+    }
+  }
+}
