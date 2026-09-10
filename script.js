@@ -2,6 +2,7 @@ const translations = {
     en: {
         "nav.music": "MUSIC",
         "nav.videos": "VIDEOS",
+        "nav.download": "DOWNLOAD",
         "nav.about": "ABOUT",
         "nav.contact": "CONTACT",
 
@@ -10,6 +11,17 @@ const translations = {
         "hero.listen": "LISTEN",
         "hero.scroll": "SCROLL TO EXPLORE",
         "hero.scrollAria": "Scroll to explore",
+
+        "player.press": "PRESS",
+        "player.toPlay": "TO PLAY",
+        "player.toPause": "TO PAUSE",
+        "player.tapToPlay": "TAP TO PLAY",
+        "player.tapToPause": "TAP TO PAUSE",
+        "player.nowPlaying": "NOW PLAYING",
+        "player.queue": "QUEUE",
+        "player.play": "Play",
+        "player.pause": "Pause",
+        "player.unavailable": "UNAVAILABLE",
 
         "sections.music": "MUSIC",
         "sections.visuals": "VISUALS",
@@ -44,6 +56,7 @@ const translations = {
     pl: {
         "nav.music": "MUZYKA",
         "nav.videos": "WIDEO",
+        "nav.download": "DOWNLOAD",
         "nav.about": "O MNIE",
         "nav.contact": "KONTAKT",
 
@@ -52,6 +65,17 @@ const translations = {
         "hero.listen": "SŁUCHAJ",
         "hero.scroll": "PRZEJDŹ DALEJ",
         "hero.scrollAria": "Przewiń dalej",
+
+        "player.press": "NACIŚNIJ",
+        "player.toPlay": "ABY ODTWARZAĆ",
+        "player.toPause": "ABY ZATRZYMAĆ",
+        "player.tapToPlay": "DOTKNIJ, ABY ODTWARZAĆ",
+        "player.tapToPause": "DOTKNIJ, ABY ZATRZYMAĆ",
+        "player.nowPlaying": "TERAZ GRA",
+        "player.queue": "KOLEJKA",
+        "player.play": "Odtwórz",
+        "player.pause": "Zatrzymaj",
+        "player.unavailable": "NIEDOSTĘPNE",
 
         "sections.music": "MUZYKA",
         "sections.visuals": "WIDEO",
@@ -384,6 +408,10 @@ function applyLanguage(language, animate = false) {
 
 
     updateCollaborationStatsLanguage();
+
+    if (typeof updatePlayerText === "function") {
+        updatePlayerText();
+    }
 
 
     const languageSwitcher =
@@ -1443,6 +1471,479 @@ function escapeHTML(text) {
 
 }
 
+
+/* PUMPSOUND PLAYER */
+
+// DISABLED PLAYER: preserved intact for later re-enable. This block is not run.
+if (false) {
+
+const tracks = [
+    {
+        artist: "PUMPSOUND",
+        title: "ALL GOOD THINGS RMX",
+        src: "audio/all-good-things-rmx.mp3",
+        cover: null
+    }
+];
+
+let currentTrackIndex = 0;
+let shuffleEnabled = readPlayerSetting("shuffle", false);
+let repeatMode = readPlayerSetting("repeat", "off");
+let previousVolume = readPlayerSetting("volume", 0.8);
+let trackUnavailable = false;
+
+const playerAudio = new Audio();
+playerAudio.preload = "metadata";
+playerAudio.volume = Math.min(1, Math.max(0, previousVolume));
+playerAudio.muted = readPlayerSetting("muted", false);
+
+
+function readPlayerSetting(key, fallback) {
+
+    try {
+        const value = localStorage.getItem(`pumpsound-player-${key}`);
+
+        return value === null
+            ? fallback
+            : JSON.parse(value);
+    } catch {
+        return fallback;
+    }
+
+}
+
+
+function savePlayerSetting(key, value) {
+
+    try {
+        localStorage.setItem(
+            `pumpsound-player-${key}`,
+            JSON.stringify(value)
+        );
+    } catch {
+        // Storage is optional for the player.
+    }
+
+}
+
+
+function getCurrentTrack() {
+    return tracks[currentTrackIndex];
+}
+
+
+function formatPlayerTime(time) {
+
+    if (!Number.isFinite(time) || time < 0) {
+        return "0:00";
+    }
+
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60)
+        .toString()
+        .padStart(2, "0");
+
+    return `${minutes}:${seconds}`;
+
+}
+
+
+function setPlayerText(selector, value) {
+    document.querySelectorAll(selector).forEach((element) => {
+        element.textContent = value;
+    });
+}
+
+
+function updatePlayerText() {
+
+    const dictionary = translations[currentLanguage] || translations.en;
+    const isPlaying = !playerAudio.paused;
+    const unavailable = trackUnavailable;
+    const action = isPlaying
+        ? dictionary["player.toPause"]
+        : dictionary["player.toPlay"];
+
+    setPlayerText("[data-player-hero-prefix]", dictionary["player.press"]);
+    setPlayerText("[data-player-hero-action]", action);
+    setPlayerText(
+        "[data-player-hero-mobile]",
+        isPlaying
+            ? dictionary["player.tapToPause"]
+            : dictionary["player.tapToPlay"]
+    );
+    setPlayerText("[data-player-now-playing]", unavailable
+        ? dictionary["player.unavailable"]
+        : dictionary["player.nowPlaying"]);
+    setPlayerText("[data-player-queue-title]", dictionary["player.queue"]);
+
+    document.querySelectorAll(".player-play-toggle").forEach((button) => {
+        button.textContent = isPlaying ? "Ⅱ" : "▶";
+        button.setAttribute(
+            "aria-label",
+            isPlaying ? dictionary["player.pause"] : dictionary["player.play"]
+        );
+        button.disabled = unavailable;
+    });
+
+    const heroTrigger = document.querySelector(".hero-player-trigger");
+
+    if (heroTrigger) {
+        heroTrigger.setAttribute(
+            "aria-label",
+            isPlaying ? dictionary["player.pause"] : dictionary["player.play"]
+        );
+        heroTrigger.disabled = unavailable;
+    }
+
+}
+
+
+function updateMediaSession() {
+
+    if (!("mediaSession" in navigator)) {
+        return;
+    }
+
+    const track = getCurrentTrack();
+    const artwork = track.cover
+        ? [{ src: track.cover, sizes: "512x512", type: "image/jpeg" }]
+        : [];
+
+    try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.title,
+            artist: track.artist,
+            artwork
+        });
+    } catch {
+        // Media Session artwork is optional.
+    }
+
+}
+
+
+function updatePlayerUI() {
+
+    const track = getCurrentTrack();
+    const duration = Number.isFinite(playerAudio.duration)
+        ? playerAudio.duration
+        : 0;
+    const currentTime = Number.isFinite(playerAudio.currentTime)
+        ? playerAudio.currentTime
+        : 0;
+    const progress = duration > 0
+        ? (currentTime / duration) * 100
+        : 0;
+
+    setPlayerText(".player-artist", track.artist);
+    setPlayerText(".player-title", track.title);
+    setPlayerText(".player-mobile-artist", track.artist);
+    setPlayerText(".player-mobile-title", track.title);
+    setPlayerText(".player-current-time", formatPlayerTime(currentTime));
+    setPlayerText(".player-duration", formatPlayerTime(duration));
+
+    document.querySelectorAll(".player-progress").forEach((input) => {
+        input.value = String(progress);
+        input.disabled = !duration || trackUnavailable;
+    });
+
+    document.querySelectorAll(".player-volume").forEach((input) => {
+        input.value = String(playerAudio.volume);
+    });
+
+    document.querySelectorAll(".player-mute").forEach((button) => {
+        button.classList.toggle("is-active", playerAudio.muted);
+        button.setAttribute("aria-label", playerAudio.muted ? "Unmute" : "Mute");
+    });
+
+    document.querySelectorAll(".player-shuffle").forEach((button) => {
+        button.classList.toggle("is-active", shuffleEnabled);
+        button.setAttribute("aria-pressed", String(shuffleEnabled));
+    });
+
+    document.querySelectorAll(".player-repeat").forEach((button) => {
+        button.classList.toggle("is-active", repeatMode !== "off");
+        button.dataset.repeat = repeatMode;
+        button.setAttribute("aria-label", `Repeat ${repeatMode}`);
+    });
+
+    const player = document.querySelector(".site-player");
+    if (player) {
+        const isActuallyPlaying =
+            !playerAudio.paused &&
+            !trackUnavailable;
+
+        player.dataset.playerState = isActuallyPlaying
+            ? "playing"
+            : "paused";
+        player.classList.toggle("is-playing", isActuallyPlaying);
+        player.classList.toggle("is-unavailable", trackUnavailable);
+        player.style.setProperty(
+            "--player-progress",
+            `${progress}%`
+        );
+    }
+
+    if ("mediaSession" in navigator) {
+        try {
+            navigator.mediaSession.playbackState = playerAudio.paused
+                ? "paused"
+                : "playing";
+
+            if (duration > 0) {
+                navigator.mediaSession.setPositionState({
+                    duration,
+                    position: Math.min(currentTime, duration)
+                });
+            }
+        } catch {
+            // Media Session state is optional.
+        }
+    }
+
+    updatePlayerText();
+
+}
+
+
+function loadTrack(index, shouldPlay = false) {
+
+    currentTrackIndex = (index + tracks.length) % tracks.length;
+    trackUnavailable = false;
+    playerAudio.pause();
+    playerAudio.removeAttribute("src");
+    playerAudio.load();
+    updateMediaSession();
+    updatePlayerUI();
+    renderQueue();
+
+    if (shouldPlay) {
+        playTrack();
+    }
+
+}
+
+
+async function playTrack() {
+
+    if (trackUnavailable || !tracks.length) {
+        return;
+    }
+
+    if (!playerAudio.src) {
+        playerAudio.src = getCurrentTrack().src;
+    }
+
+    try {
+        await playerAudio.play();
+    } catch {
+        // The audio events keep the UI truthful when playback is blocked or fails.
+        updatePlayerUI();
+    }
+
+}
+
+
+function pauseTrack() {
+    playerAudio.pause();
+}
+
+
+function togglePlay() {
+    if (playerAudio.paused) {
+        playTrack();
+    } else {
+        pauseTrack();
+    }
+}
+
+
+function getNextTrackIndex() {
+    if (tracks.length < 2) {
+        return currentTrackIndex;
+    }
+
+    if (!shuffleEnabled) {
+        return (currentTrackIndex + 1) % tracks.length;
+    }
+
+    let nextIndex = currentTrackIndex;
+    while (nextIndex === currentTrackIndex) {
+        nextIndex = Math.floor(Math.random() * tracks.length);
+    }
+
+    return nextIndex;
+}
+
+
+function nextTrack(shouldPlay = !playerAudio.paused) {
+    loadTrack(getNextTrackIndex(), shouldPlay);
+}
+
+
+function previousTrack() {
+    if (playerAudio.currentTime > 3) {
+        playerAudio.currentTime = 0;
+        return;
+    }
+
+    loadTrack(
+        shuffleEnabled
+            ? getNextTrackIndex()
+            : currentTrackIndex - 1,
+        !playerAudio.paused
+    );
+}
+
+
+function seekTo(percent) {
+    if (!Number.isFinite(playerAudio.duration)) {
+        return;
+    }
+
+    playerAudio.currentTime =
+        Math.max(0, Math.min(100, Number(percent))) /
+        100 * playerAudio.duration;
+}
+
+
+function cycleRepeatMode() {
+    repeatMode = repeatMode === "off"
+        ? "all"
+        : repeatMode === "all"
+            ? "one"
+            : "off";
+    savePlayerSetting("repeat", repeatMode);
+    updatePlayerUI();
+}
+
+
+function renderQueue() {
+    const queue = document.querySelector(".player-queue-list");
+    if (!queue) return;
+
+    queue.innerHTML = tracks.map((track, index) => `
+        <button type="button" class="player-queue-item${index === currentTrackIndex ? " is-current" : ""}" data-track-index="${index}" role="listitem">
+            <span><strong>${escapeHTML(track.artist)}</strong><em>${escapeHTML(track.title)}</em></span>
+        </button>
+    `).join("");
+}
+
+
+function toggleQueue(force) {
+    const queue = document.querySelector(".player-queue");
+    if (!queue) return;
+    const shouldOpen = force ?? queue.hidden;
+    queue.hidden = !shouldOpen;
+}
+
+
+function setPlayerExpanded(isExpanded) {
+
+    const player = document.querySelector(".site-player");
+    const expandedPanel = document.querySelector(
+        ".player-mobile-expanded"
+    );
+
+    if (!player || !expandedPanel) {
+        return;
+    }
+
+    player.classList.toggle("is-expanded", isExpanded);
+    expandedPanel.hidden = !isExpanded;
+
+    document.querySelectorAll(".player-mobile-expand").forEach((button) => {
+        button.setAttribute("aria-expanded", String(isExpanded));
+        button.setAttribute(
+            "aria-label",
+            isExpanded ? "Collapse player" : "Expand player"
+        );
+    });
+
+}
+
+
+function setupMediaSession() {
+    if (!("mediaSession" in navigator)) return;
+
+    const actions = {
+        play: playTrack,
+        pause: pauseTrack,
+        previoustrack: previousTrack,
+        nexttrack: nextTrack,
+        seekbackward: () => { playerAudio.currentTime = Math.max(0, playerAudio.currentTime - 10); },
+        seekforward: () => { playerAudio.currentTime = Math.min(playerAudio.duration || 0, playerAudio.currentTime + 10); },
+        seekto: (details) => { if (Number.isFinite(details.seekTime)) playerAudio.currentTime = details.seekTime; }
+    };
+
+    Object.entries(actions).forEach(([action, handler]) => {
+        try { navigator.mediaSession.setActionHandler(action, handler); } catch { /* Unsupported action. */ }
+    });
+}
+
+
+function setupPlayer() {
+
+    if (!document.querySelector(".site-player")) return;
+
+    updatePlayerUI();
+    renderQueue();
+    setupMediaSession();
+
+    document.querySelectorAll(".player-play-toggle, .hero-player-trigger").forEach((button) => button.addEventListener("click", togglePlay));
+    document.querySelector(".player-track")?.addEventListener(
+        "click",
+        () => setPlayerExpanded(true)
+    );
+    document.querySelectorAll(".player-next").forEach((button) => button.addEventListener("click", () => nextTrack()));
+    document.querySelectorAll(".player-previous").forEach((button) => button.addEventListener("click", previousTrack));
+    document.querySelectorAll(".player-shuffle").forEach((button) => button.addEventListener("click", () => { shuffleEnabled = !shuffleEnabled; savePlayerSetting("shuffle", shuffleEnabled); updatePlayerUI(); }));
+    document.querySelectorAll(".player-repeat").forEach((button) => button.addEventListener("click", cycleRepeatMode));
+    document.querySelectorAll(".player-mute").forEach((button) => button.addEventListener("click", () => { if (playerAudio.muted) { playerAudio.muted = false; playerAudio.volume = previousVolume; } else { previousVolume = playerAudio.volume || previousVolume; playerAudio.muted = true; } }));
+    document.querySelectorAll(".player-volume").forEach((input) => input.addEventListener("input", () => { previousVolume = Number(input.value); playerAudio.volume = previousVolume; playerAudio.muted = false; }));
+    document.querySelectorAll(".player-progress").forEach((input) => input.addEventListener("input", () => seekTo(input.value)));
+    document.querySelectorAll(".player-queue-toggle").forEach((button) => button.addEventListener("click", () => toggleQueue()));
+    document.querySelector(".player-queue-close")?.addEventListener("click", () => toggleQueue(false));
+    document.querySelector(".player-mobile-expand")?.addEventListener("click", () => setPlayerExpanded(true));
+    document.querySelector(".player-mobile-collapse")?.addEventListener("click", () => setPlayerExpanded(false));
+
+    document.addEventListener("click", (event) => {
+        const player = document.querySelector(".site-player");
+        if (player && !player.contains(event.target)) toggleQueue(false);
+    });
+    document.querySelector(".player-queue-list")?.addEventListener("click", (event) => {
+        const item = event.target.closest(".player-queue-item");
+        if (!item) return;
+        loadTrack(Number(item.dataset.trackIndex), true);
+        toggleQueue(false);
+    });
+    document.addEventListener("keydown", (event) => {
+        const target = event.target;
+        if (event.key.toLowerCase() === "p" && !target.matches("input, textarea, select, [contenteditable='true']")) {
+            event.preventDefault();
+            togglePlay();
+        }
+    });
+
+    playerAudio.addEventListener("play", updatePlayerUI);
+    playerAudio.addEventListener("pause", updatePlayerUI);
+    playerAudio.addEventListener("timeupdate", updatePlayerUI);
+    playerAudio.addEventListener("loadedmetadata", updatePlayerUI);
+    playerAudio.addEventListener("durationchange", updatePlayerUI);
+    playerAudio.addEventListener("volumechange", () => { savePlayerSetting("volume", playerAudio.volume); savePlayerSetting("muted", playerAudio.muted); updatePlayerUI(); });
+    playerAudio.addEventListener("error", () => { trackUnavailable = true; updatePlayerUI(); });
+    playerAudio.addEventListener("ended", () => {
+        if (repeatMode === "one") { playerAudio.currentTime = 0; playTrack(); return; }
+        if (tracks.length === 1 || currentTrackIndex < tracks.length - 1 || repeatMode === "all" || shuffleEnabled) nextTrack(true);
+        else updatePlayerUI();
+    });
+
+}
+
+
+setupPlayer();
+}
 
 setupLanguageSwitcher();
 setupCollaborationStats();

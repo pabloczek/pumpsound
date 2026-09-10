@@ -5,5 +5,15 @@
       "path": "/api/spotify-cron",
       "schedule": "0 3 * * *"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/download",
+      "destination": "/download.html"
+    },
+    {
+      "source": "/d/:slug",
+      "destination": "/download-track.html?slug=:slug"
+    }
   ]
 }

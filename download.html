@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <script>
+        (() => {
+            let language;
+            try {
+                const savedLanguage = localStorage.getItem("pumpsound-language");
+                language = savedLanguage === "pl" || savedLanguage === "en" ? savedLanguage : navigator.language?.toLowerCase().startsWith("pl") ? "pl" : "en";
+            } catch { language = navigator.language?.toLowerCase().startsWith("pl") ? "pl" : "en"; }
+            document.documentElement.lang = language;
+        })();
+    </script>
+    <title>Downloads — PUMPSOUND</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/download.css">
+</head>
+<body class="download-page" data-download-page="catalog">
+    <header class="download-header">
+        <a class="logo" href="/" aria-label="PUMPSOUND home"><img src="/images/logo.png" alt="PUMPSOUND"></a>
+        <div class="header-right">
+            <nav aria-label="Primary navigation">
+                <a href="/#music" data-download-i18n="nav.music">MUSIC</a><a href="/#visuals" data-download-i18n="nav.videos">VIDEOS</a><a class="active" href="/download" data-download-i18n="nav.download">DOWNLOAD</a><a href="/#about" data-download-i18n="nav.about">ABOUT</a><a href="/#contact" data-download-i18n="nav.contact">CONTACT</a>
+            </nav>
+            <div class="language-switcher" aria-label="Language selector"><span class="language-indicator" aria-hidden="true"></span><button type="button" class="language-button active" data-language="en" aria-label="English">EN</button><button type="button" class="language-button" data-language="pl" aria-label="Polski">PL</button></div>
+        </div>
+    </header>
+    <main class="download-main">
+        <div class="download-intro"><p class="download-kicker" data-download-i18n="catalog.kicker">PUMPSOUND ARCHIVE</p><h1 data-download-i18n="catalog.title">DOWNLOADS</h1><p class="download-lede" data-download-i18n="catalog.lede">A selected catalogue of PUMPSOUND releases, prepared for free download.</p></div>
+        <label class="download-search" for="download-search"><span class="sr-only" data-download-i18n="catalog.searchLabel">Search tracks</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.2 4.2"></path></svg><input id="download-search" type="search" autocomplete="off" data-download-placeholder="catalog.searchPlaceholder" placeholder="SEARCH TRACKS"></label>
+        <section class="download-catalogue" aria-live="polite"><div class="download-catalogue-heading"><span data-download-i18n="catalog.available">AVAILABLE RELEASES</span><span id="download-count"></span></div><div id="download-list" class="download-list"></div><p id="download-empty" class="download-empty" hidden data-download-i18n="catalog.empty">No releases match your search.</p></section>
+    </main>
+    <script src="/downloads.js"></script>
+</body>
+</html>
