@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     }
 
     const tracks = req.body?.tracks;
-    if (!Array.isArray(tracks) || tracks.length > 50) {
+    if (!Array.isArray(tracks) || tracks.length > 500) {
         return res.status(400).json({ error: "Invalid release list" });
     }
 
